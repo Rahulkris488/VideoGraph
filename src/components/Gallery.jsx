@@ -6,12 +6,9 @@ export default function Gallery() {
     const sectionRef = useRef(null);
     const cardsRef = useRef([]);
     const deckRef = useRef(null);
-    const mobileCardsRef = useRef([]);
 
     const [isMobile, setIsMobile] = useState(false);
 
-    // Service-oriented titles with images
-    // Images in: public/assets/services/
     const services = [
         {
             id: 1,
@@ -51,20 +48,14 @@ export default function Gallery() {
     ];
 
     // Check for mobile on mount and resize
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
     useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            setIsMobile(window.innerWidth < 768);
-        };
-
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // DESKTOP: Fan-out card animation - NO PIN for seamless flow
+    // DESKTOP: Fan-out card animation
     useEffect(() => {
         if (isMobile) return;
 
@@ -73,7 +64,6 @@ export default function Gallery() {
             const totalCards = cards.length;
             const centerIndex = Math.floor(totalCards / 2);
 
-            // Initial stacked state
             cards.forEach((card, i) => {
                 gsap.set(card, {
                     x: 0,
@@ -85,11 +75,8 @@ export default function Gallery() {
                 });
             });
 
-            // Single continuous scroll animation - NO PIN
             cards.forEach((card, i) => {
                 const offsetFromCenter = i - centerIndex;
-
-                // Responsive spread calculation
                 const isSmallLaptop = window.innerWidth < 1400;
                 const isTablet = window.innerWidth < 1024;
 
@@ -122,83 +109,20 @@ export default function Gallery() {
         return () => ctx.revert();
     }, [isMobile]);
 
-    // MOBILE: Spicy Layout & Animation
+    // MOBILE: Vertical Stack Animation
     useEffect(() => {
         if (!isMobile) return;
 
-        const ctx = gsap.context(() => {
-            const cards = mobileCardsRef.current.filter(Boolean);
-            const line = document.querySelector('.mobile-line');
+        ScrollTrigger.batch(".vertical-card", {
+            start: "top 85%",
+            onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, duration: 0.6, ease: "power2.out" }),
+        });
 
-            // Initial states
-            gsap.set(line, { scaleX: 0 });
-            gsap.set(cards, { opacity: 0 });
+        gsap.set(".vertical-card", { opacity: 0, y: 30 });
 
-            // 1. Draw the line
-            gsap.to(line, {
-                scaleX: 1,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: ".mobile-spicy-wrapper",
-                    start: "top 60%",
-                    end: "top 40%",
-                    scrub: 1
-                }
-            });
-
-            // 2. Card 1 (Top) comes UP from line
-            gsap.fromTo(cards[0],
-                { y: 80, opacity: 0 },
-                {
-                    y: -30, // Move up more
-                    opacity: 1,
-                    scrollTrigger: {
-                        trigger: ".mobile-spicy-wrapper",
-                        start: "top 40%",
-                        end: "top 20%",
-                        scrub: 1
-                    }
-                }
-            );
-
-            // 3. Card 2 (Bottom) comes DOWN from line
-            gsap.fromTo(cards[1],
-                { y: -80, opacity: 0 },
-                {
-                    y: 30, // Move down more
-                    opacity: 1,
-                    scrollTrigger: {
-                        trigger: ".mobile-spicy-wrapper",
-                        start: "top 20%",
-                        end: "top 0%",
-                        scrub: 1
-                    }
-                }
-            );
-
-            // 4. Other cards fade in normally later
-            cards.slice(2).forEach((card, i) => {
-                gsap.fromTo(card,
-                    { y: 50, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 85%",
-                            end: "top 65%",
-                            scrub: 1
-                        }
-                    }
-                );
-            });
-
-        }, sectionRef);
-
-        return () => ctx.revert();
+        return () => ScrollTrigger.getAll().forEach(t => t.kill());
     }, [isMobile]);
 
-    // DESKTOP RENDER - With background images
     const renderDesktop = () => (
         <div className="gallery-deck-wrapper">
             <div className="gallery-deck" ref={deckRef}>
@@ -209,7 +133,6 @@ export default function Gallery() {
                         className="gallery-card"
                     >
                         <div className="card-inner">
-                            {/* Background image */}
                             <div
                                 className="card-bg-image"
                                 style={{ backgroundImage: `url(${service.image})` }}
@@ -227,78 +150,21 @@ export default function Gallery() {
         </div>
     );
 
-    // MOBILE RENDER - Spicy Layout
-    const renderMobile = () => (
-        <div className="mobile-services-list">
-
-            {/* Spicy Wrapper for first two cards */}
-            <div className="mobile-spicy-wrapper" style={{
-                position: 'relative',
-                padding: '40px 0',
-                marginBottom: '40px',
-                minHeight: '400px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                gap: '20px'
-            }}>
-                {/* The Line */}
-                <div className="mobile-line" style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '5%',
-                    right: '5%',
-                    height: '3px',
-                    background: '#ccff00',
-                    transform: 'scaleX(0)',
-                    transformOrigin: 'center',
-                    boxShadow: '0 0 10px #ccff00'
-                }} />
-
-                {/* Card 1 - Top */}
-                <div
-                    ref={el => mobileCardsRef.current[0] = el}
-                    className="mobile-service-card spicy-card"
-                    style={{ backgroundImage: `url(${services[0].image})`, marginBottom: '10px' }}
-                >
-                    <div className="mobile-card-overlay" />
-                    <div className="mobile-card-content">
-                        <span className="mobile-card-cat">{services[0].cat}</span>
-                        <h3 className="mobile-card-title">{services[0].title}</h3>
+    const renderVertical = () => (
+        <div className="vertical-stackbox">
+            {services.map((service, i) => (
+                <div key={service.id} className="vertical-card">
+                    <div
+                        className="vertical-card-bg"
+                        style={{ backgroundImage: `url(${service.image})` }}
+                    />
+                    <div className="vertical-card-overlay" />
+                    <div className="vertical-card-content">
+                        <span className="vertical-card-cat">{service.cat}</span>
+                        <h3 className="vertical-card-title">{service.title}</h3>
+                        <p className="vertical-card-desc">{service.desc}</p>
                     </div>
-                </div>
-
-                {/* Card 2 - Bottom */}
-                <div
-                    ref={el => mobileCardsRef.current[1] = el}
-                    className="mobile-service-card spicy-card"
-                    style={{ backgroundImage: `url(${services[1].image})`, marginTop: '10px' }}
-                >
-                    <div className="mobile-card-overlay" />
-                    <div className="mobile-card-content">
-                        <span className="mobile-card-cat">{services[1].cat}</span>
-                        <h3 className="mobile-card-title">{services[1].title}</h3>
-                    </div>
-                </div>
-            </div>
-
-            {/* Remaining Cards (Normal) */}
-            {services.slice(2).map((service, i) => (
-                <div
-                    key={service.id}
-                    ref={el => mobileCardsRef.current[i + 2] = el}
-                    className="mobile-service-card"
-                    style={{ backgroundImage: `url(${service.image})` }}
-                >
-                    <div className="mobile-card-overlay" />
-                    <div className="mobile-card-content">
-                        <div className="mobile-card-header">
-                            <span className="mobile-card-number">0{i + 3}</span>
-                            <span className="mobile-card-cat">{service.cat}</span>
-                        </div>
-                        <h3 className="mobile-card-title">{service.title}</h3>
-                        <p className="mobile-card-desc">{service.desc}</p>
-                    </div>
+                    <div className="vertical-card-number">0{i + 1}</div>
                 </div>
             ))}
         </div>
@@ -314,7 +180,7 @@ export default function Gallery() {
                 </div>
             </div>
 
-            {isMobile ? renderMobile() : renderDesktop()}
+            {isMobile ? renderVertical() : renderDesktop()}
         </section>
     );
 }

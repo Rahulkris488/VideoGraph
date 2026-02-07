@@ -30,20 +30,6 @@ export default function Hero() {
                     duration: 0.8,
                     ease: "power3.out"
                 }, "-=0.5")
-                .from(".hero-cta .btn", {
-                    y: 30,
-                    opacity: 0,
-                    stagger: 0.1,
-                    duration: 0.6,
-                    ease: "power3.out"
-                }, "-=0.4")
-                .from(".hero-visual", {
-                    y: 80,
-                    opacity: 0,
-                    scale: 0.9,
-                    duration: 1.2,
-                    ease: "power3.out"
-                }, "-=0.6")
                 .from(".scroll-indicator", {
                     y: 20,
                     opacity: 0,
@@ -63,42 +49,8 @@ export default function Hero() {
                         y: p * 150,
                         opacity: 1 - p * 1.5
                     });
-                    gsap.set(".hero-visual", {
-                        y: p * 100,
-                        scale: 1 - p * 0.1,
-                        opacity: 1 - p * 1.2
-                    });
                 }
             });
-
-            // Magnetic effect on visual
-            const visual = document.querySelector(".hero-visual");
-            if (visual) {
-                visual.addEventListener("mousemove", (e) => {
-                    const rect = visual.getBoundingClientRect();
-                    const x = (e.clientX - rect.left - rect.width / 2) / 20;
-                    const y = (e.clientY - rect.top - rect.height / 2) / 20;
-                    gsap.to(visual, {
-                        x: x,
-                        y: y,
-                        rotationY: x * 0.5,
-                        rotationX: -y * 0.5,
-                        duration: 0.5,
-                        ease: "power2.out"
-                    });
-                });
-
-                visual.addEventListener("mouseleave", () => {
-                    gsap.to(visual, {
-                        x: 0,
-                        y: 0,
-                        rotationY: 0,
-                        rotationX: 0,
-                        duration: 0.5,
-                        ease: "power2.out"
-                    });
-                });
-            }
         }, sectionRef);
 
         return () => ctx.revert();

@@ -1,6 +1,4 @@
-import "../styles/cursor3d.css";
-
+// Cursor3D component disabled - using CSS only
 export default function Cursor3D() {
-    // Simple clean cursor - just CSS, no complex JS
     return null;
 }

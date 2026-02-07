@@ -1,0 +1,227 @@
+.services-section {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+}
+
+/* Header */
+.services-header {
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.services-header .tag {
+    margin-bottom: 16px;
+}
+
+/* Packages Grid */
+.packages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 100px;
+    perspective: 1000px;
+}
+
+/* Package Card */
+.package-card {
+    padding: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
+}
+
+.package-card:hover,
+.package-card.active {
+    border-color: var(--border-hover);
+}
+
+.package-card.popular {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, rgba(174, 255, 0, 0.03) 0%, transparent 40%);
+}
+
+.package-card.popular:hover {
+    box-shadow: 0 0 60px rgba(174, 255, 0, 0.1);
+}
+
+.popular-tag {
+    position: absolute;
+    top: 0;
+    right: 24px;
+    padding: 6px 12px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Card Header */
+.package-header {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.package-name {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.package-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.price {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.popular .price {
+    color: var(--accent);
+}
+
+.duration {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.package-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* Features */
+.package-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+    flex-grow: 1;
+}
+
+.package-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.check {
+    color: var(--accent);
+    font-size: 11px;
+}
+
+/* CTA */
+.package-card .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Process Section */
+.process-section {
+    padding-top: 60px;
+    border-top: 1px solid var(--border);
+}
+
+.process-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 48px;
+    text-align: center;
+}
+
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    position: relative;
+}
+
+.process-line {
+    position: absolute;
+    top: 24px;
+    left: 60px;
+    right: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), var(--border), var(--accent));
+    z-index: 0;
+}
+
+.process-step {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--accent);
+    background: var(--bg-secondary);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.step-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.step-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .packages-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .package-card.popular {
+        order: -1;
+    }
+
+    .process-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+
+    .process-line {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .process-grid {
+        grid-template-columns: 1fr;
+    }
+}

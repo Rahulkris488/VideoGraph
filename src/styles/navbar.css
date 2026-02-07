@@ -1,0 +1,245 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 16px 0;
+    transition: all 0.3s var(--ease-out);
+}
+
+.navbar.scrolled {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0;
+}
+
+.nav-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.logo-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+}
+
+/* Nav Links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-link {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.3s var(--ease-out);
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Nav Actions */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-cta {
+    padding: 10px 18px;
+    font-size: 11px;
+}
+
+/* ========================================
+   MOBILE TOP BAR
+   ======================================== */
+
+.mobile-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+}
+
+.mobile-topbar.scrolled {
+    background: rgba(10, 10, 10, 0.98);
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:active {
+    border-color: var(--accent);
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 16px;
+    height: 2px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ========================================
+   FILMSTRIP MENU (Toggle on click)
+   ======================================== */
+
+.filmstrip-menu {
+    position: fixed;
+    top: 60px;
+    right: -200px;
+    z-index: 1000;
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 1px solid #333;
+}
+
+.filmstrip-menu.open {
+    right: 0;
+}
+
+/* Film holes */
+.filmstrip-holes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    background: #1a1a1a;
+}
+
+.film-hole {
+    width: 6px;
+    height: 8px;
+    background: #0a0a0a;
+    flex-shrink: 0;
+}
+
+/* Navigation links - Vertical layout */
+.filmstrip-links {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    background: #0f0f0f;
+}
+
+.filmstrip-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px 14px 16px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #222;
+}
+
+.filmstrip-link:last-child {
+    border-bottom: none;
+}
+
+.filmstrip-link:active {
+    background: rgba(174, 255, 0, 0.1);
+}
+
+.filmstrip-icon {
+    font-size: 1.1rem;
+    color: var(--accent);
+    width: 24px;
+    text-align: center;
+}
+
+.filmstrip-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+}
+
+.filmstrip-link:hover .filmstrip-label,
+.filmstrip-link:active .filmstrip-label {
+    color: var(--accent);
+}
+
+/* Backdrop */
+.menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+}

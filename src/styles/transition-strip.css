@@ -1,0 +1,64 @@
+/* Transition Strip - Similar to film tape but styled as a digital junction */
+.transition-strip-section {
+    position: relative;
+    height: 120px;
+    background: transparent;
+    z-index: 20;
+    margin: -80px 0;
+    /* Overlap */
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.transition-track {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(2deg);
+    /* Different angle than film tape */
+    width: 200%;
+    height: 60px;
+    background: #ccff00;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.4);
+}
+
+.transition-content {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee 20s linear infinite;
+}
+
+.transition-text {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #000;
+    text-transform: uppercase;
+    margin-right: 40px;
+    letter-spacing: 0.1em;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 480px) {
+    .transition-text {
+        font-size: 1rem;
+        margin-right: 20px;
+    }
+
+    .transition-strip-section {
+        height: 100px;
+        margin: -60px 0;
+    }
+}

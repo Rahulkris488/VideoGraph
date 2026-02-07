@@ -1,0 +1,12 @@
+.canvas-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    /* Only visible on the landing/hero section */
+    mask-image: linear-gradient(to bottom, black 0%, black 80vh, transparent 100vh);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80vh, transparent 100vh);
+}

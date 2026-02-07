@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { initLenis, destroyLenis } from "./core/lenis";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import FilmTape from "./components/FilmTape";
 import About from "./components/About";
+import TransitionStrip from "./components/TransitionStrip";
 import Gallery from "./components/Gallery";
 import RecentWork from "./components/RecentWork";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import Preloader from "./components/Preloader";
 
 function App() {
     useEffect(() => {
@@ -17,6 +19,7 @@ function App() {
 
     return (
         <>
+            <Preloader />
             <Navbar />
             <main>
                 <section id="home">
@@ -24,6 +27,7 @@ function App() {
                 </section>
                 <FilmTape />
                 <About />
+                <TransitionStrip />
                 <Gallery />
                 <RecentWork />
                 <Contact />

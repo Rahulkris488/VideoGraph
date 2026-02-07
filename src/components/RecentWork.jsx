@@ -34,45 +34,26 @@ const PHOTOS_ROW_2 = [
 // ----------------------------------------------------------------------
 
 const ReelCard = ({ reel }) => {
-    const cardRef = useRef(null);
     const videoRef = useRef(null);
-    const [isVisible, setIsVisible] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setIsVisible(true);
-                    if (videoRef.current) {
-                        videoRef.current.play().catch(() => { });
-                    }
-                } else {
-                    if (videoRef.current) {
-                        videoRef.current.pause();
-                    }
-                }
-            },
-            { threshold: 0.1, rootMargin: '100px' }
-        );
-
-        if (cardRef.current) observer.observe(cardRef.current);
-        return () => observer.disconnect();
+        if (videoRef.current) {
+            videoRef.current.play().catch(() => { });
+        }
     }, []);
 
     return (
-        <div ref={cardRef} className="work-card reel-card">
+        <div className="work-card reel-card">
             <div className="card-video-bg">
-                {isVisible && (
-                    <video
-                        ref={videoRef}
-                        src={reel.src}
-                        muted
-                        loop
-                        playsInline
-                        preload="none"
-                        className="card-video"
-                    />
-                )}
+                <video
+                    ref={videoRef}
+                    src={reel.src}
+                    muted
+                    loop
+                    playsInline
+                    className="card-video"
+                />
             </div>
         </div>
     );
@@ -161,7 +142,7 @@ export default function RecentWork() {
                 {/* Row 1: REELS - Scrolls LEFT to RIGHT */}
                 <div
                     className="video-row row-1"
-                    style={{ transform: `translateX(${-1000 + row1Move}px)` }}
+                    style={{ transform: `translateX(${-2000 + row1Move * 2}px)` }}
                 >
                     {[...REELS_ROW_1, ...REELS_ROW_1, ...REELS_ROW_1].map((reel, i) => (
                         <ReelCard key={`reel-${i}`} reel={reel} />
@@ -171,7 +152,7 @@ export default function RecentWork() {
                 {/* Row 2: PHOTOS - Scrolls RIGHT to LEFT */}
                 <div
                     className="video-row row-2"
-                    style={{ transform: `translateX(${500 - row2Move}px)` }}
+                    style={{ transform: `translateX(${600 - row2Move * 2}px)` }}
                 >
                     {[...PHOTOS_ROW_2, ...PHOTOS_ROW_2, ...PHOTOS_ROW_2].map((photo, i) => (
                         <PhotoCard key={`photo-${i}`} photo={photo} />

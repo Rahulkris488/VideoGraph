@@ -98,8 +98,8 @@ export default function Gallery() {
                     ease: "none",
                     scrollTrigger: {
                         trigger: sectionRef.current,
-                        start: "top 60%",
-                        end: "top 10%",
+                        start: "top 50%",
+                        end: "top 0%",
                         scrub: 1.5
                     }
                 });

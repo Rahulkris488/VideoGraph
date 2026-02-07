@@ -47,9 +47,10 @@ export default function Gallery() {
         }
     ];
 
-    // Check for mobile on mount and resize
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
@@ -103,13 +104,12 @@ export default function Gallery() {
                     }
                 });
             });
-
         }, sectionRef);
 
         return () => ctx.revert();
     }, [isMobile]);
 
-    // MOBILE: Vertical Stack Animation
+    // MOBILE: Simple vertical reveal animation
     useEffect(() => {
         if (!isMobile) return;
 
@@ -150,7 +150,7 @@ export default function Gallery() {
         </div>
     );
 
-    const renderVertical = () => (
+    const renderMobile = () => (
         <div className="vertical-stackbox">
             {services.map((service, i) => (
                 <div key={service.id} className="vertical-card">
@@ -179,8 +179,7 @@ export default function Gallery() {
                     </h2>
                 </div>
             </div>
-
-            {isMobile ? renderVertical() : renderDesktop()}
+            {isMobile ? renderMobile() : renderDesktop()}
         </section>
     );
 }

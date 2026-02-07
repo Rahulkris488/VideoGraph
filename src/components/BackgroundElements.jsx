@@ -7,7 +7,6 @@ export default function BackgroundElements() {
             <div className="glow-orb orb-1"></div>
             <div className="glow-orb orb-2"></div>
             <div className="glow-orb orb-3"></div>
-            <div className="glow-orb orb-4"></div>
 
             {/* Grid overlay */}
             <div className="bg-grid"></div>

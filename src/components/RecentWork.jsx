@@ -35,6 +35,7 @@ const PHOTOS_ROW_2 = [
 
 const ReelCard = ({ reel }) => {
     const videoRef = useRef(null);
+    const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
         if (videoRef.current) {

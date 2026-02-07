@@ -51,14 +51,17 @@ export default function Gallery() {
     ];
 
     // Check for mobile on mount and resize
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
     useEffect(() => {
-        const checkMobile = () => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
             setIsMobile(window.innerWidth < 768);
         };
 
-        checkMobile();
-        window.addEventListener("resize", checkMobile);
-        return () => window.removeEventListener("resize", checkMobile);
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     // DESKTOP: Fan-out card animation - NO PIN for seamless flow
@@ -85,7 +88,16 @@ export default function Gallery() {
             // Single continuous scroll animation - NO PIN
             cards.forEach((card, i) => {
                 const offsetFromCenter = i - centerIndex;
-                const spreadX = offsetFromCenter * 280;
+
+                // Responsive spread calculation
+                const isSmallLaptop = window.innerWidth < 1400;
+                const isTablet = window.innerWidth < 1024;
+
+                let spreadFactor = 280;
+                if (isTablet) spreadFactor = 160;
+                else if (isSmallLaptop) spreadFactor = 220;
+
+                const spreadX = offsetFromCenter * spreadFactor;
                 const spreadY = Math.abs(offsetFromCenter) * 8;
                 const rotation = offsetFromCenter * 4;
                 const finalScale = 1 - Math.abs(offsetFromCenter) * 0.015;
@@ -110,27 +122,72 @@ export default function Gallery() {
         return () => ctx.revert();
     }, [isMobile]);
 
-    // MOBILE: Staggered scroll-reveal animation
+    // MOBILE: Spicy Layout & Animation
     useEffect(() => {
         if (!isMobile) return;
 
         const ctx = gsap.context(() => {
             const cards = mobileCardsRef.current.filter(Boolean);
+            const line = document.querySelector('.mobile-line');
 
-            cards.forEach((card, i) => {
+            // Initial states
+            gsap.set(line, { scaleX: 0 });
+            gsap.set(cards, { opacity: 0 });
+
+            // 1. Draw the line
+            gsap.to(line, {
+                scaleX: 1,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: ".mobile-spicy-wrapper",
+                    start: "top 60%",
+                    end: "top 40%",
+                    scrub: 1
+                }
+            });
+
+            // 2. Card 1 (Top) comes UP from line
+            gsap.fromTo(cards[0],
+                { y: 80, opacity: 0 },
+                {
+                    y: -30, // Move up more
+                    opacity: 1,
+                    scrollTrigger: {
+                        trigger: ".mobile-spicy-wrapper",
+                        start: "top 40%",
+                        end: "top 20%",
+                        scrub: 1
+                    }
+                }
+            );
+
+            // 3. Card 2 (Bottom) comes DOWN from line
+            gsap.fromTo(cards[1],
+                { y: -80, opacity: 0 },
+                {
+                    y: 30, // Move down more
+                    opacity: 1,
+                    scrollTrigger: {
+                        trigger: ".mobile-spicy-wrapper",
+                        start: "top 20%",
+                        end: "top 0%",
+                        scrub: 1
+                    }
+                }
+            );
+
+            // 4. Other cards fade in normally later
+            cards.slice(2).forEach((card, i) => {
                 gsap.fromTo(card,
-                    { y: 60, opacity: 0, scale: 0.95 },
+                    { y: 50, opacity: 0 },
                     {
                         y: 0,
                         opacity: 1,
-                        scale: 1,
-                        duration: 0.6,
-                        ease: "power3.out",
                         scrollTrigger: {
                             trigger: card,
                             start: "top 85%",
-                            end: "top 60%",
-                            toggleActions: "play none none reverse"
+                            end: "top 65%",
+                            scrub: 1
                         }
                     }
                 );
@@ -170,20 +227,73 @@ export default function Gallery() {
         </div>
     );
 
-    // MOBILE RENDER - With background images
+    // MOBILE RENDER - Spicy Layout
     const renderMobile = () => (
         <div className="mobile-services-list">
-            {services.map((service, i) => (
+
+            {/* Spicy Wrapper for first two cards */}
+            <div className="mobile-spicy-wrapper" style={{
+                position: 'relative',
+                padding: '40px 0',
+                marginBottom: '40px',
+                minHeight: '400px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: '20px'
+            }}>
+                {/* The Line */}
+                <div className="mobile-line" style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '5%',
+                    right: '5%',
+                    height: '3px',
+                    background: '#ccff00',
+                    transform: 'scaleX(0)',
+                    transformOrigin: 'center',
+                    boxShadow: '0 0 10px #ccff00'
+                }} />
+
+                {/* Card 1 - Top */}
+                <div
+                    ref={el => mobileCardsRef.current[0] = el}
+                    className="mobile-service-card spicy-card"
+                    style={{ backgroundImage: `url(${services[0].image})`, marginBottom: '10px' }}
+                >
+                    <div className="mobile-card-overlay" />
+                    <div className="mobile-card-content">
+                        <span className="mobile-card-cat">{services[0].cat}</span>
+                        <h3 className="mobile-card-title">{services[0].title}</h3>
+                    </div>
+                </div>
+
+                {/* Card 2 - Bottom */}
+                <div
+                    ref={el => mobileCardsRef.current[1] = el}
+                    className="mobile-service-card spicy-card"
+                    style={{ backgroundImage: `url(${services[1].image})`, marginTop: '10px' }}
+                >
+                    <div className="mobile-card-overlay" />
+                    <div className="mobile-card-content">
+                        <span className="mobile-card-cat">{services[1].cat}</span>
+                        <h3 className="mobile-card-title">{services[1].title}</h3>
+                    </div>
+                </div>
+            </div>
+
+            {/* Remaining Cards (Normal) */}
+            {services.slice(2).map((service, i) => (
                 <div
                     key={service.id}
-                    ref={el => mobileCardsRef.current[i] = el}
+                    ref={el => mobileCardsRef.current[i + 2] = el}
                     className="mobile-service-card"
                     style={{ backgroundImage: `url(${service.image})` }}
                 >
                     <div className="mobile-card-overlay" />
                     <div className="mobile-card-content">
                         <div className="mobile-card-header">
-                            <span className="mobile-card-number">0{i + 1}</span>
+                            <span className="mobile-card-number">0{i + 3}</span>
                             <span className="mobile-card-cat">{service.cat}</span>
                         </div>
                         <h3 className="mobile-card-title">{service.title}</h3>

@@ -1,14 +1,15 @@
 /* Film Tape Section - Border between Hero and About */
 .filmtape-section {
     position: relative;
-    height: 100px;
+    height: 140px;
     overflow: hidden;
     background: transparent;
     z-index: 10;
-    margin: -50px 0;
+    margin: -70px 0;
     /* Overlap to sit on border */
     width: 100%;
     max-width: 100%;
+    pointer-events: none;
 }
 
 /* Strip */
@@ -79,8 +80,8 @@
 /* Mobile - Film strip sits on border between sections */
 @media (max-width: 768px) {
     .filmtape-section {
-        height: 70px;
-        margin: -35px 0;
+        height: 100px;
+        margin: -50px 0;
         /* Half height overlap on each side */
     }
 

@@ -29,12 +29,12 @@ export default function Footer() {
                 <div className="footer-grid">
                     <div className="footer-brand">
                         <a href="#home" className="footer-logo">
-                            <span className="logo-text">STUDIO</span>
+                            <span className="logo-text">SAVAGE MEDIA</span>
                             <span className="logo-dot"></span>
                         </a>
                         <p className="footer-tagline">
-                            Premium video production for luxury real estate.
-                            Turning properties into cinematic experiences.
+                            believe. build. become.
+                            Intentional, cinematic, and high-quality visual storytelling.
                         </p>
                         <div className="footer-social">
                             <a href="#" className="social-link" aria-label="Instagram">
@@ -87,7 +87,7 @@ export default function Footer() {
 
                 <div className="footer-bottom">
                     <p className="copyright">
-                        © {currentYear} Studio. All rights reserved.
+                        © {currentYear} Savage Media. All rights reserved.
                     </p>
                     <p className="made-with">
                         Made with <span className="heart">♥</span> in Los Angeles

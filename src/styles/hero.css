@@ -71,11 +71,14 @@
 }
 
 .hero-subline {
-    font-size: 1.15rem;
-    color: var(--text-secondary);
-    max-width: 500px;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 520px;
     margin: 0 auto;
-    line-height: 1.7;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Scroll indicator */

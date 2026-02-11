@@ -1,136 +1,137 @@
-/* Recent Work Section */
+/* ========================================
+   RECENT WORK SECTION - FOCUS MODE
+   ======================================== */
+
 .recent-work-section {
     position: relative;
-    padding: 120px 0;
-    background: #050505;
+    padding: 100px 0;
     overflow: hidden;
-    color: white;
-    z-index: 5;
-    max-width: 100%;
+    background: #050505;
 }
 
+.perspective-container {
+    perspective: 1000px;
+}
+
+/* HEADER */
 .recent-work-header {
-    margin-bottom: 60px;
     text-align: center;
+    margin-bottom: 80px;
 }
 
 .recent-work-label {
-    color: #ccff00;
-    font-family: monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
+    display: inline-block;
+    color: var(--color-accent);
+    font-size: 0.9rem;
     text-transform: uppercase;
-    display: block;
-    margin-bottom: 8px;
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
 }
 
 .recent-work-title {
     font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 700;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 0.9;
+    color: white;
     text-transform: uppercase;
-    letter-spacing: -0.02em;
-    margin: 0;
 }
 
 .recent-work-title .subtitle {
-    color: #666;
+    color: #333;
+    /* Darker grey for contrast */
 }
 
-/* Perspective Container */
-.perspective-container {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-}
-
-/* Video Row - Scroll triggered */
+/* ROWS */
 .video-row {
     display: flex;
-    gap: 24px;
-    width: max-content;
+    gap: 30px;
+    margin-bottom: 40px;
     will-change: transform;
-    transition: transform 0.1s linear;
+    /* Hint to browser for optimization */
+    /* Hardware acceleration hack */
+    transform: translateZ(0);
 }
 
-.video-row.row-1 {
-    margin-bottom: 24px;
+.row-1 {
+    margin-left: -200px;
 }
 
-/* Work Card */
+.row-2 {
+    margin-left: 0;
+}
+
+/* CARDS */
 .work-card {
     position: relative;
     flex-shrink: 0;
-    width: 280px;
-    aspect-ratio: 9/16;
+    width: 300px;
+    height: 440px;
+    border-radius: 0;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
     background: #111;
+    /* Removed skew transform as per user request */
+    transform: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     cursor: pointer;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid transparent;
 }
 
-.work-card:hover {
-    border-color: rgba(204, 255, 0, 0.4);
-    box-shadow: 0 0 40px rgba(204, 255, 0, 0.15);
+/* Hover/Focus Effects */
+.work-card:hover,
+.work-card.is-active {
+    /* Scale up slightly without skew */
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-@media (min-width: 768px) {
-    .work-card {
-        width: 300px;
-    }
+.work-card.is-active .video-poster {
+    /* Optional: darken poster slightly if video fails to load for seamless look */
 }
 
-/* Video Background */
-.card-video-bg {
+/* CONTENTS */
+.card-video-bg,
+.card-photo-bg {
+    width: 100%;
+    height: 100%;
     position: absolute;
-    inset: 0;
-    background: black;
+    top: 0;
+    left: 0;
+    background-size: cover;
+    background-position: center;
 }
 
 .card-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
-/* Photo Background */
-.card-photo-bg {
-    position: absolute;
-    inset: 0;
+.video-poster {
+    width: 100%;
+    height: 100%;
     background-size: cover;
     background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
 }
 
-/* Mobile adjustments */
+/* MOBILE */
 @media (max-width: 768px) {
     .recent-work-section {
-        padding: 80px 0;
+        padding: 60px 0;
     }
 
     .video-row {
-        gap: 16px;
+        gap: 15px;
     }
 
     .work-card {
         width: 200px;
-    }
-
-    .recent-work-title {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .work-card {
-        width: 140px;
-    }
-
-    .video-row {
-        gap: 10px;
-    }
-
-    .recent-work-title {
-        font-size: 1.75rem;
+        height: 300px;
     }
 }

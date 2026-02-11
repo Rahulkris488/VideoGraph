@@ -68,14 +68,13 @@ export default function Hero() {
                     <span className="tag tag-accent hero-tag">Real Estate Cinematography</span>
 
                     <h1 className="hero-headline heading-xl">
-                        <span className="line">We Create</span>
-                        <span className="line"><span className="accent-text">Cinematic</span></span>
-                        <span className="line">Stories</span>
+                        <span className="line">We Don't Just</span>
+                        <span className="line">Create <span className="accent-text">Videos</span></span>
                     </h1>
 
                     <p className="hero-subline">
-                        Premium video production for luxury properties.<br />
-                        Professional editing. Stunning visuals. Results that sell.
+                        We create high quality content to help<br />
+                        agents sell faster and <span className="accent-text">stand out</span>.
                     </p>
 
 

@@ -50,7 +50,7 @@ export default function Navbar() {
                 <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
                     <div className="nav-container">
                         <a href="#home" className="nav-logo">
-                            <span className="logo-text">STUDIO</span>
+                            <span className="logo-text">SAVAGE MEDIA</span>
                             <span className="logo-dot"></span>
                         </a>
 
@@ -79,7 +79,7 @@ export default function Navbar() {
                 <>
                     <nav className={`mobile-topbar ${scrolled ? "scrolled" : ""}`}>
                         <a href="#home" className="nav-logo">
-                            <span className="logo-text">STUDIO</span>
+                            <span className="logo-text">SAVAGE MEDIA</span>
                             <span className="logo-dot"></span>
                         </a>
 

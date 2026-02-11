@@ -1,370 +1,141 @@
 /* ========================================
-   ABOUT SECTION - SHARP MINIMAL DESIGN
+   ABOUT SECTION - SAVAGE MEDIA (PURE 2D)
    ======================================== */
 
 .about-section {
     position: relative;
-    padding: 140px 0;
+    padding: 160px 0;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
     background: var(--bg-primary);
     overflow: hidden;
-    max-width: 100%;
+    /* Removed perspective to ensure flat 2D rendering */
 }
 
-/* TITLE */
+/* 2D CYBERPUNK BACKGROUND - FLAT */
+.cyber-grid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background: #050505;
+    /* Darker base */
+}
+
+.cyber-grid-plane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(174, 255, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(174, 255, 0, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: flatGridScroll 10s linear infinite;
+    opacity: 0.5;
+}
+
+.cyber-grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Radial fade to match the dark theme */
+    background: radial-gradient(circle at center, transparent 0%, var(--bg-primary) 90%);
+    pointer-events: none;
+}
+
+@keyframes flatGridScroll {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 50px 50px;
+        /* Diagonal movement */
+    }
+}
+
+
+/* CONTENT STYLES */
+.relative-z {
+    position: relative;
+    z-index: 1;
+}
+
+/* Centered Layout */
+.about-content-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-header-centered {
+    margin-bottom: 50px;
+}
+
 .about-title {
     font-family: var(--font-display);
     font-size: clamp(3rem, 8vw, 6rem);
     font-weight: 800;
+    line-height: 0.95;
     color: white;
-    margin-bottom: 80px;
+    margin-top: 24px;
     letter-spacing: -0.02em;
-}
-
-/* GRID LAYOUT */
-.about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    margin-bottom: 120px;
-    align-items: start;
-}
-
-.about-grid.reverse {
-    direction: rtl;
-}
-
-.about-grid.reverse>* {
-    direction: ltr;
-}
-
-.about-grid-item {
-    width: 100%;
-}
-
-/* PHOTO CANVAS - Premiere Pro Style */
-.photo-canvas-wrapper {
-    position: relative;
-}
-
-/* ABOUT PHOTO - Real image display */
-.about-photo {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #333;
-}
-
-.about-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
-    transition: transform 0.6s ease;
-}
-
-.about-photo:hover .about-image {
-    transform: scale(1.02);
-}
-
-.photo-label {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 12px 16px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-    font-size: 11px;
-    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #999;
+    text-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
 }
 
-.photo-canvas {
-    background: #0a0a0a;
-    border: 1px solid #333;
-    overflow: hidden;
-}
-
-.canvas-toolbar {
+/* Text Container */
+.about-text-container {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: #1a1a1a;
-    border-bottom: 1px solid #333;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 600px;
 }
 
-.toolbar-dot {
-    width: 10px;
-    height: 10px;
-    background: #333;
-    border-radius: 0;
+.about-text-p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #aeaeae;
 }
 
-.toolbar-dot:first-child {
-    background: #ff5f57;
-}
-
-.toolbar-dot:nth-child(2) {
-    background: #febc2e;
-}
-
-.toolbar-dot:nth-child(3) {
-    background: #28c840;
-}
-
-.toolbar-title {
-    margin-left: auto;
-    font-family: monospace;
-    font-size: 11px;
-    color: #666;
-}
-
-.canvas-content {
-    aspect-ratio: 16 / 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
-    position: relative;
-}
-
-.canvas-placeholder {
-    text-align: center;
-    position: relative;
-}
-
-.canvas-placeholder span {
-    font-family: monospace;
-    font-size: 14px;
-    color: #444;
-    letter-spacing: 0.2em;
-}
-
-.playhead {
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    width: 2px;
-    height: 30px;
-    background: var(--accent);
-}
-
-.canvas-timeline {
-    display: flex;
-    gap: 2px;
-    padding: 8px;
-    background: #0d0d0d;
-}
-
-.timeline-track {
-    flex: 1;
-    height: 20px;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-}
-
-.timeline-track.active {
-    background: linear-gradient(90deg, #2a4a1a 0%, #3a5a2a 100%);
-    border-color: var(--accent);
-}
-
-.photo-canvas.small .canvas-content {
-    aspect-ratio: 4 / 3;
-}
-
-/* TEXT BLOCKS */
-.text-block {
-    padding-top: 20px;
-}
-
-.section-heading {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
+.about-text-p.lead {
+    font-size: 1.25rem;
     color: white;
-    line-height: 1.2;
-    margin-bottom: 24px;
+    font-weight: 500;
 }
 
-.about-text {
-    font-size: 0.95rem;
-    line-height: 1.8;
-    color: #888;
-    margin-bottom: 20px;
-}
-
-.about-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+.about-signature-centered {
+    margin-top: 40px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
     font-size: 0.9rem;
-    color: white;
-    text-decoration: none;
-    margin-top: 20px;
-    transition: color 0.3s;
 }
 
-.about-link:hover {
-    color: var(--accent);
-}
-
-.about-link span {
-    font-size: 1.2rem;
-}
-
-/* QUOTE SECTION */
-.quote-section {
-    padding: 100px 0;
-    border-top: 1px solid #222;
-    border-bottom: 1px solid #222;
-    margin-bottom: 120px;
-    position: relative;
-}
-
-.quote-mark {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    font-family: Georgia, serif;
-    font-size: 6rem;
-    color: #222;
-    line-height: 0.5;
-}
-
-.quote-text {
-    font-family: var(--font-display);
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    font-weight: 600;
-    font-style: italic;
-    color: white;
-    line-height: 1.4;
-    margin-left: 80px;
-    margin-bottom: 24px;
-}
-
-.quote-author {
-    font-size: 0.85rem;
-    color: #666;
-    margin-left: 80px;
-}
-
-/* STATS */
-.stats-row {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 80px;
-    border-top: 1px solid #222;
-}
-
-.stat-item {
-    text-align: left;
-}
-
-.stat-number {
-    display: block;
-    font-family: var(--font-display);
-    font-size: 3.5rem;
-    font-weight: 700;
-    color: white;
-    line-height: 1;
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.8rem;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 8px;
-}
-
-/* RESPONSIVE */
-@media (max-width: 1024px) {
-    .about-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
-
-    .about-grid.reverse {
-        direction: ltr;
-    }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
     .about-section {
-        padding: 80px 0;
+        padding: 120px 0;
     }
 
     .about-title {
-        font-size: 2.5rem;
-        margin-bottom: 50px;
-    }
-
-    .about-grid {
-        margin-bottom: 80px;
-    }
-
-    .quote-section {
-        padding: 60px 0;
-        margin-bottom: 80px;
-    }
-
-    .quote-mark {
-        font-size: 4rem;
-        top: 40px;
-    }
-
-    .quote-text {
-        margin-left: 50px;
-        font-size: 1.25rem;
-    }
-
-    .quote-author {
-        margin-left: 50px;
-    }
-
-    .stats-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-    }
-
-    .stat-number {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .about-title {
-        font-size: 2rem;
-    }
-
-    .section-heading {
-        font-size: 1.4rem;
-    }
-
-    .quote-text {
-        margin-left: 0;
-        margin-top: 60px;
-    }
-
-    .quote-author {
-        margin-left: 0;
-    }
-
-    .quote-mark {
-        left: 0;
-        top: 30px;
         font-size: 3rem;
     }
 
-    .stats-row {
-        gap: 30px;
-        padding-top: 50px;
-    }
-
-    .stat-number {
-        font-size: 2rem;
+    .about-text-p {
+        font-size: 1rem;
     }
 }

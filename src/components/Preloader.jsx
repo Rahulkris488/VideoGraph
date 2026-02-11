@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import gsap from 'gsap';
 
-// List of all assets to preload
+// List of assets to preload (Images only)
+// Videos are too heavy for memory and will be loaded on hover
 const ASSETS = [
-    // Reels
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.01.44 PM.mp4",
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.01.45 PM (2).mp4",
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.00.44 PM.mp4",
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.01.45 PM.mp4",
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.01.43 PM.mp4",
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.01.44 PM (1).mp4",
-    "/assets/work/reels/WhatsApp Video 2026-02-07 at 4.01.45 PM (1).mp4",
+    // Posters for Reels
+    "/assets/work/reels/poster1.jpg",
+    "/assets/work/reels/poster2.jpg",
+    "/assets/work/reels/poster3.jpg",
+    "/assets/work/reels/poster4.jpg",
+    "/assets/work/reels/poster5.jpg",
+    "/assets/work/reels/poster6.jpg",
+    "/assets/work/reels/poster7.jpg",
     // Photos
     "/assets/work/photos/IMA05179.jpg",
     "/assets/work/photos/IMA05232.jpg",
@@ -28,9 +29,6 @@ const ASSETS = [
     "/assets/services/interior_photo.png",
     "/assets/services/social_media.png",
     "/assets/services/virtual_tour.png",
-    // About
-    "/assets/about/download (39).jpg",
-    "/assets/about/download (40).jpg"
 ];
 
 export default function Preloader() {
@@ -47,33 +45,26 @@ export default function Preloader() {
             setProgress(prev => Math.max(prev, newProgress));
         };
 
-        // Load all assets
-        ASSETS.forEach(src => {
-            if (src.endsWith('.mp4')) {
-                const video = document.createElement('video');
-                video.src = src;
-                video.onloadeddata = updateProgress;
-                video.onerror = updateProgress; // Continue even if error
-                video.load();
-            } else {
-                const img = new Image();
-                img.src = src;
-                img.onload = updateProgress;
-                img.onerror = updateProgress;
-            }
-        });
+        const loadAsset = (src) => {
+            const img = new Image();
+            img.src = src;
+            img.onload = updateProgress;
+            img.onerror = updateProgress;
+        };
 
-        // Fallback timer in case something hangs
+        // Start loading all assets
+        ASSETS.forEach(src => loadAsset(src));
+
+        // Safety timeout
         const fallbackTimer = setTimeout(() => {
             setProgress(100);
-        }, 8000); // 8s max wait
+        }, 5000); // 5s max wait
 
         return () => clearTimeout(fallbackTimer);
     }, []);
 
     useEffect(() => {
         if (progress >= 100) {
-            // Animation out
             const tl = gsap.timeline();
 
             tl.to('.preloader-percent', {

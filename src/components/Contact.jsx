@@ -68,7 +68,7 @@ export default function Contact() {
                                     </div>
                                     <div className="form-group">
                                         <label>Email *</label>
-                                        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="john@email.com" required />
+                                        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="hello@savagemedia.com" required />
                                     </div>
                                 </div>
 
@@ -160,7 +160,7 @@ export default function Contact() {
             {/* Production Slate Overlay */}
             <div className="slate-overlay">
                 <div className="slate">
-                    <span className="slate-title">STUDIO</span>
+                    <span className="slate-title">SAVAGE MEDIA</span>
                     <div className="slate-info">
                         <span>PROJECT: Your Property</span>
                         <span>DATE: __ / __ / ____</span>

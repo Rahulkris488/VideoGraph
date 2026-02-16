@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { gsap } from "../core/gsap";
 import "../styles/navbar.css";
 
@@ -6,6 +7,8 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -39,8 +42,31 @@ export default function Navbar() {
         { label: "Contact", href: "#contact", icon: "✉" }
     ];
 
-    const handleNavClick = () => {
+    const handleNavClick = (e, href) => {
+        e.preventDefault();
         setMenuOpen(false);
+
+        if (location.pathname === "/") {
+            // On home page — just scroll to section
+            const el = document.querySelector(href);
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+        } else {
+            // On another page — navigate to home, then scroll after load
+            navigate("/");
+            setTimeout(() => {
+                const el = document.querySelector(href);
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+            }, 300);
+        }
+    };
+
+    const handleLogoClick = (e) => {
+        e.preventDefault();
+        if (location.pathname === "/") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+            navigate("/");
+        }
     };
 
     return (
@@ -49,26 +75,26 @@ export default function Navbar() {
             {!isMobile && (
                 <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
                     <div className="nav-container">
-                        <a href="#home" className="nav-logo">
+                        <a href="/" className="nav-logo" onClick={handleLogoClick}>
                             <span className="logo-text">SAVAGE MEDIA</span>
                             <span className="logo-dot"></span>
                         </a>
 
                         <div className="nav-links">
                             {navLinks.map((link, i) => (
-                                <a key={i} href={link.href} className="nav-link">
+                                <a key={i} href={link.href} className="nav-link" onClick={(e) => handleNavClick(e, link.href)}>
                                     {link.label}
                                 </a>
                             ))}
                         </div>
 
                         <div className="nav-actions">
-                            <a href="#contact" className="btn btn-primary nav-cta">
-                                Book a Call
+                            <Link to="/booking" className="btn btn-primary nav-cta">
+                                Book Now
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M7 17L17 7M17 7H7M17 7V17" />
                                 </svg>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </nav>
@@ -78,7 +104,7 @@ export default function Navbar() {
             {isMobile && (
                 <>
                     <nav className={`mobile-topbar ${scrolled ? "scrolled" : ""}`}>
-                        <a href="#home" className="nav-logo">
+                        <a href="/" className="nav-logo" onClick={handleLogoClick}>
                             <span className="logo-text">SAVAGE MEDIA</span>
                             <span className="logo-dot"></span>
                         </a>
@@ -108,7 +134,7 @@ export default function Navbar() {
                                     key={i}
                                     href={link.href}
                                     className="filmstrip-link"
-                                    onClick={handleNavClick}
+                                    onClick={(e) => handleNavClick(e, link.href)}
                                 >
                                     <span className="filmstrip-icon">{link.icon}</span>
                                     <span className="filmstrip-label">{link.label}</span>

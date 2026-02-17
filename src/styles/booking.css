@@ -603,6 +603,35 @@
     padding: 20px 24px;
 }
 
+/* Validation Errors */
+.error-text {
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 6px;
+    color: #ff4d4d;
+}
+
+/* How It Works Note */
+.how-it-works {
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: rgba(174, 255, 0, 0.05);
+    border-left: 3px solid var(--accent);
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 4px;
+}
+
+.how-it-works strong {
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-right: 6px;
+}
+
 .review-section-title {
     font-size: 10px;
     font-weight: 700;

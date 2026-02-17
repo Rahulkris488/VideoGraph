@@ -134,13 +134,25 @@ export default function BookingPage() {
 
     // Property details
     const [propertyDetails, setPropertyDetails] = useState({
-        sqft: "", brokerage: "", lockbox: "No", listingDate: ""
+        address: "", sqft: "", brokerage: "", lockbox: "No", listingDate: ""
     });
 
     // Submission state
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [emailResult, setEmailResult] = useState(null);
+
+    // Validation state
+    const [errors, setErrors] = useState({});
+
+    // Validation helpers
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validatePhone = (phone) => {
+        return /^\d{10,}$/.test(phone.replace(/\D/g, ""));
+    };
 
     /* Animate step changes */
     useEffect(() => {
@@ -162,8 +174,11 @@ export default function BookingPage() {
             case 2: return selectedDate !== null;
             case 3: return selectedTime !== null;
             case 4:
+                const isEmailValid = validateEmail(personalDetails.email);
+                const isPhoneValid = validatePhone(personalDetails.phone);
                 return personalDetails.firstName && personalDetails.lastName
-                    && personalDetails.phone && personalDetails.email;
+                    && personalDetails.phone && personalDetails.email
+                    && isEmailValid && isPhoneValid;
             case 5: return true; // property details are optional-ish
             case 6: return true;
             default: return false;
@@ -369,10 +384,19 @@ export default function BookingPage() {
                     <input
                         type="tel" placeholder="(555) 000-0000"
                         value={personalDetails.phone}
-                        onChange={e => setPersonalDetails(p => ({ ...p, phone: e.target.value }))}
+                        onChange={e => {
+                            const val = e.target.value;
+                            setPersonalDetails(p => ({ ...p, phone: val }));
+                            if (val && !validatePhone(val)) {
+                                setErrors(prev => ({ ...prev, phone: "Please enter a valid phone number (digits only, at least 10)" }));
+                            } else {
+                                setErrors(prev => ({ ...prev, phone: null }));
+                            }
+                        }}
                         required
                     />
                 </div>
+                {errors.phone && <p className="error-text" style={{ color: "#ff4d4d", fontSize: "0.85rem", marginTop: "0.5rem" }}>{errors.phone}</p>}
             </div>
 
             <div className="booking-form-group">
@@ -380,15 +404,33 @@ export default function BookingPage() {
                 <input
                     type="email" placeholder="john@example.com"
                     value={personalDetails.email}
-                    onChange={e => setPersonalDetails(p => ({ ...p, email: e.target.value }))}
+                    onChange={e => {
+                        const val = e.target.value;
+                        setPersonalDetails(p => ({ ...p, email: val }));
+                        if (val && !validateEmail(val)) {
+                            setErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
+                        } else {
+                            setErrors(prev => ({ ...prev, email: null }));
+                        }
+                    }}
                     required
                 />
+                {errors.email && <p className="error-text" style={{ color: "#ff4d4d", fontSize: "0.85rem", marginTop: "0.5rem" }}>{errors.email}</p>}
             </div>
         </div>
     );
 
     const renderStep5 = () => (
         <div className="booking-form">
+            <div className="booking-form-group">
+                <label>Property Address</label>
+                <input
+                    type="text" placeholder="123 Main St, City, State, ZIP"
+                    value={propertyDetails.address}
+                    onChange={e => setPropertyDetails(p => ({ ...p, address: e.target.value }))}
+                />
+            </div>
+
             <div className="booking-form-row">
                 <div className="booking-form-group">
                     <label>Approximate Sq. Ft.</label>
@@ -477,6 +519,10 @@ export default function BookingPage() {
 
             <div className="review-section">
                 <h4 className="review-section-title">Property</h4>
+                <div className="review-row">
+                    <span className="review-label">Address</span>
+                    <span className="review-value">{propertyDetails.address || "—"}</span>
+                </div>
                 <div className="review-row">
                     <span className="review-label">Sq. Ft.</span>
                     <span className="review-value">{propertyDetails.sqft || "—"}</span>
@@ -567,6 +613,11 @@ export default function BookingPage() {
                     <div className="booking-step-header">
                         <span className="tag tag-accent">Step {step} of 6</span>
                         <h1 className="heading-lg">{stepTitles[step]}</h1>
+                    </div>
+
+                    {/* How It Works Note */}
+                    <div className="how-it-works">
+                        <p><strong>How it works:</strong> accurate details help us serve you better. please ensure your contact info is correct for seamless communication.</p>
                     </div>
 
                     {/* Step Content */}

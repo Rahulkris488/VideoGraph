@@ -1159,3 +1159,42 @@
 .access-notes-textarea::placeholder {
     color: var(--text-muted);
 }
+
+/* ═══════ RESPONSIVE BRANDING ═══════ */
+.booking-logo-img {
+    height: 80px;
+    width: auto;
+}
+
+@media (max-width: 768px) {
+    .booking-logo-img {
+        height: 60px;
+    }
+
+    .booking-page {
+        padding-top: 120px;
+    }
+
+    .booking-back-btn {
+        top: 20px;
+        z-index: 100;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-logo-img {
+        height: 50px;
+    }
+
+    .booking-page {
+        padding-top: 120px;
+    }
+
+    .booking-back-btn {
+        top: 20px;
+    }
+
+    .booking-logo-container {
+        top: 1.5rem;
+    }
+}

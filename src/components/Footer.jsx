@@ -29,8 +29,7 @@ export default function Footer() {
                 <div className="footer-grid">
                     <div className="footer-brand">
                         <a href="#home" className="footer-logo">
-                            <span className="logo-text">SAVAGE MEDIA</span>
-                            <span className="logo-dot"></span>
+                            <img src="/assets/work/Logo.png" alt="Savage Media" className="logo-img" style={{ height: "80px", width: "auto", marginBottom: "1rem" }} />
                         </a>
                         <p className="footer-tagline">
                             believe. build. become.

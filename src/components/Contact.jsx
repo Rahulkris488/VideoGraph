@@ -62,7 +62,7 @@ export default function Contact() {
             {/* Production Slate Overlay */}
             <div className="slate-overlay">
                 <div className="slate">
-                    <span className="slate-title">SAVAGE MEDIA</span>
+                    <img src="/assets/work/Logo.png" alt="Savage Media" className="slate-logo" style={{ height: "90px", width: "auto", margin: "0 auto 1rem", display: "block" }} />
                     <div className="slate-info">
                         <span>PROJECT: Your Property</span>
                         <span>DATE: __ / __ / ____</span>

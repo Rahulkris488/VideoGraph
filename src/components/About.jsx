@@ -71,7 +71,7 @@ export default function About() {
                         </p>
 
                         <div className="about-signature-centered">
-                            <span className="accent-text">SAVAGE MEDIA</span>
+                            <img src="/assets/work/Logo.png" alt="Savage Media" style={{ height: "60px", width: "auto", display: "block", margin: "0 auto" }} />
                         </div>
                     </div>
 

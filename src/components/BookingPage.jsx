@@ -750,66 +750,73 @@ export default function BookingPage() {
                 Back
             </button>
 
-            {!submitted ? (
-                <div className="booking-container">
-                    {/* Step Progress */}
-                    <div className="step-progress">
-                        {STEP_LABELS.map((label, i) => (
-                            <div key={i} className={`step-item ${step === i + 1 ? "active" : ""} ${step > i + 1 ? "completed" : ""}`}>
-                                <div className="step-number">
-                                    {step > i + 1 ? "✓" : i + 1}
+            {/* Logo */}
+            <div className="booking-logo-container" style={{ position: "absolute", top: "2rem", left: "50%", transform: "translateX(-50%)", zIndex: 10 }}>
+                <img src="/assets/work/Logo.png" alt="Savage Media" className="booking-logo-img" style={{ width: "auto" }} />
+            </div>
+
+            {
+                !submitted ? (
+                    <div className="booking-container">
+                        {/* Step Progress */}
+                        <div className="step-progress">
+                            {STEP_LABELS.map((label, i) => (
+                                <div key={i} className={`step-item ${step === i + 1 ? "active" : ""} ${step > i + 1 ? "completed" : ""}`}>
+                                    <div className="step-number">
+                                        {step > i + 1 ? "✓" : i + 1}
+                                    </div>
+                                    <span className="step-label">{label}</span>
+                                    {i < STEP_LABELS.length - 1 && <div className="step-line" />}
                                 </div>
-                                <span className="step-label">{label}</span>
-                                {i < STEP_LABELS.length - 1 && <div className="step-line" />}
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
 
-                    {/* Step Header */}
-                    <div className="booking-step-header">
-                        <span className="tag tag-accent">Step {step} of 6</span>
-                        <h1 className="heading-lg">{stepTitles[step]}</h1>
-                    </div>
+                        {/* Step Header */}
+                        <div className="booking-step-header">
+                            <span className="tag tag-accent">Step {step} of 6</span>
+                            <h1 className="heading-lg">{stepTitles[step]}</h1>
+                        </div>
 
-                    {/* How It Works Note */}
-                    <div className="how-it-works">
-                        <p><strong>How it works:</strong> accurate details help us serve you better. please ensure your contact info is correct for seamless communication.</p>
-                    </div>
+                        {/* How It Works Note */}
+                        <div className="how-it-works">
+                            <p><strong>How it works:</strong> accurate details help us serve you better. please ensure your contact info is correct for seamless communication.</p>
+                        </div>
 
-                    {/* Step Content */}
-                    <div className="booking-step-content">
-                        {stepRenderers[step]()}
-                    </div>
+                        {/* Step Content */}
+                        <div className="booking-step-content">
+                            {stepRenderers[step]()}
+                        </div>
 
-                    {/* Navigation */}
-                    <div className="booking-nav">
-                        {step > 1 && (
-                            <button className="btn btn-outline" onClick={goBack}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
-                                Back
-                            </button>
-                        )}
-                        <div className="booking-nav-spacer" />
-                        {step < 6 ? (
-                            <button className="btn btn-primary" onClick={goNext} disabled={!canProceed()}>
-                                Continue
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                            </button>
-                        ) : (
-                            <button
-                                className={`btn btn-primary ${submitting ? "loading" : ""}`}
-                                onClick={handleConfirm}
-                                disabled={submitting}
-                            >
-                                {submitting ? "Sending..." : "Confirm Booking"}
-                                {!submitting && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>}
-                            </button>
-                        )}
+                        {/* Navigation */}
+                        <div className="booking-nav">
+                            {step > 1 && (
+                                <button className="btn btn-outline" onClick={goBack}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+                                    Back
+                                </button>
+                            )}
+                            <div className="booking-nav-spacer" />
+                            {step < 6 ? (
+                                <button className="btn btn-primary" onClick={goNext} disabled={!canProceed()}>
+                                    Continue
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                                </button>
+                            ) : (
+                                <button
+                                    className={`btn btn-primary ${submitting ? "loading" : ""}`}
+                                    onClick={handleConfirm}
+                                    disabled={submitting}
+                                >
+                                    {submitting ? "Sending..." : "Confirm Booking"}
+                                    {!submitting && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>}
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </div>
-            ) : (
-                renderSuccess()
-            )}
-        </div>
+                ) : (
+                    renderSuccess()
+                )
+            }
+        </div >
     );
 }

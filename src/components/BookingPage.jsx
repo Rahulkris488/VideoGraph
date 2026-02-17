@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "../core/gsap";
 import { sendBookingEmails } from "../services/emailService";
@@ -144,6 +144,54 @@ export default function BookingPage() {
 
     // Validation state
     const [errors, setErrors] = useState({});
+
+    // Address autocomplete state
+    const [addressSuggestions, setAddressSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [addressLoading, setAddressLoading] = useState(false);
+    const addressTimeoutRef = useRef(null);
+    const addressWrapperRef = useRef(null);
+
+    // Debounced address search using OpenStreetMap Nominatim (free, no API key)
+    const searchAddress = useCallback((query) => {
+        if (addressTimeoutRef.current) clearTimeout(addressTimeoutRef.current);
+
+        if (!query || query.length < 3) {
+            setAddressSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        addressTimeoutRef.current = setTimeout(async () => {
+            setAddressLoading(true);
+            try {
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/search?` +
+                    `q=${encodeURIComponent(query)}&countrycodes=ca&format=json&addressdetails=1&limit=5`,
+                    { headers: { 'Accept-Language': 'en' } }
+                );
+                const data = await res.json();
+                setAddressSuggestions(data);
+                setShowSuggestions(data.length > 0);
+            } catch (err) {
+                console.error('Address search failed:', err);
+                setAddressSuggestions([]);
+            } finally {
+                setAddressLoading(false);
+            }
+        }, 300);
+    }, []);
+
+    // Close suggestions when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (addressWrapperRef.current && !addressWrapperRef.current.contains(e.target)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Validation helpers
     const validateEmail = (email) => {
@@ -422,13 +470,42 @@ export default function BookingPage() {
 
     const renderStep5 = () => (
         <div className="booking-form">
-            <div className="booking-form-group">
+            <div className="booking-form-group address-autocomplete-wrapper" ref={addressWrapperRef}>
                 <label>Property Address</label>
-                <input
-                    type="text" placeholder="123 Main St, City, State, ZIP"
-                    value={propertyDetails.address}
-                    onChange={e => setPropertyDetails(p => ({ ...p, address: e.target.value }))}
-                />
+                <div className="address-input-container">
+                    <input
+                        type="text"
+                        placeholder="Start typing a Canadian address..."
+                        value={propertyDetails.address}
+                        onChange={e => {
+                            setPropertyDetails(p => ({ ...p, address: e.target.value }));
+                            searchAddress(e.target.value);
+                        }}
+                        onFocus={() => {
+                            if (addressSuggestions.length > 0) setShowSuggestions(true);
+                        }}
+                        autoComplete="off"
+                    />
+                    {addressLoading && <span className="address-loading-spinner"></span>}
+                </div>
+                {showSuggestions && addressSuggestions.length > 0 && (
+                    <ul className="address-suggestions">
+                        {addressSuggestions.map((item, idx) => (
+                            <li
+                                key={item.place_id || idx}
+                                className="address-suggestion-item"
+                                onClick={() => {
+                                    setPropertyDetails(p => ({ ...p, address: item.display_name }));
+                                    setShowSuggestions(false);
+                                    setAddressSuggestions([]);
+                                }}
+                            >
+                                <span className="suggestion-icon">📍</span>
+                                <span className="suggestion-text">{item.display_name}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
 
             <div className="booking-form-row">

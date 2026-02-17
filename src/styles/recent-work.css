@@ -38,17 +38,25 @@
 
 .recent-work-title .subtitle {
     color: #333;
-    /* Darker grey for contrast */
 }
 
-/* ROWS */
+/* ========================================
+   ROW WRAPPER (contains arrows + row)
+   ======================================== */
+
+.row-wrapper {
+    position: relative;
+}
+
+/* ========================================
+   ROWS
+   ======================================== */
+
 .video-row {
     display: flex;
     gap: 30px;
     margin-bottom: 40px;
     will-change: transform;
-    /* Hint to browser for optimization */
-    /* Hardware acceleration hack */
     transform: translateZ(0);
 }
 
@@ -60,7 +68,10 @@
     margin-left: 0;
 }
 
-/* CARDS */
+/* ========================================
+   CARDS
+   ======================================== */
+
 .work-card {
     position: relative;
     flex-shrink: 0;
@@ -69,7 +80,6 @@
     border-radius: 0;
     overflow: hidden;
     background: #111;
-    /* Removed skew transform as per user request */
     transform: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     cursor: pointer;
@@ -79,15 +89,10 @@
 /* Hover/Focus Effects */
 .work-card:hover,
 .work-card.is-active {
-    /* Scale up slightly without skew */
     transform: scale(1.05);
     z-index: 10;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     border-color: rgba(255, 255, 255, 0.1);
-}
-
-.work-card.is-active .video-poster {
-    /* Optional: darken poster slightly if video fails to load for seamless look */
 }
 
 /* CONTENTS */
@@ -120,7 +125,108 @@
     z-index: 2;
 }
 
-/* MOBILE */
+/* ========================================
+   ROW NAVIGATION ARROWS
+   ======================================== */
+
+.row-arrows {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 20;
+    padding: 0 20px;
+}
+
+.row-arrow {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.row-arrow:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.row-arrow:active {
+    transform: scale(0.95);
+}
+
+.row-arrow svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ========================================
+   SCROLL-TO-SECTION ARROW
+   ======================================== */
+
+.scroll-to-work-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    z-index: 10;
+}
+
+.scroll-to-work-arrow:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.scroll-arrow-text {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-family: var(--font-display);
+}
+
+.scroll-to-work-arrow svg {
+    animation: bounceArrow 1.5s ease-in-out infinite;
+}
+
+@keyframes bounceArrow {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(5px);
+    }
+}
+
+/* ========================================
+   MOBILE
+   ======================================== */
+
 @media (max-width: 768px) {
     .recent-work-section {
         padding: 60px 0;
@@ -133,5 +239,19 @@
     .work-card {
         width: 200px;
         height: 300px;
+    }
+
+    .row-arrows {
+        padding: 0 10px;
+    }
+
+    .row-arrow {
+        width: 38px;
+        height: 38px;
+    }
+
+    .row-arrow svg {
+        width: 16px;
+        height: 16px;
     }
 }

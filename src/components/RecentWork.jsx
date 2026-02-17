@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap, ScrollTrigger } from "../core/gsap";
 import '../styles/recent-work.css';
 
@@ -29,6 +29,17 @@ const PHOTOS_ROW_2 = [
     { id: 9, src: "/assets/work/photos/IMA05222.jpg" },
 ];
 
+// Repeat arrays enough times for seamless infinite loop
+const repeatArray = (arr, times) => {
+    const result = [];
+    for (let t = 0; t < times; t++) {
+        arr.forEach((item, i) => {
+            result.push({ ...item, _key: `${t}-${i}` });
+        });
+    }
+    return result;
+};
+
 // ----------------------------------------------------------------------
 // Focus-Mode Reel Card
 // ----------------------------------------------------------------------
@@ -36,7 +47,6 @@ const PHOTOS_ROW_2 = [
 const ReelCard = ({ reel, isActive, isMounted }) => {
     const videoRef = useRef(null);
 
-    // Effect to toggle play/pause based on active state without unmounting
     useEffect(() => {
         if (!videoRef.current) return;
 
@@ -44,36 +54,25 @@ const ReelCard = ({ reel, isActive, isMounted }) => {
             const playPromise = videoRef.current.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    // Auto-play was prevented
                     console.warn("Autoplay prevented", error);
                 });
             }
         } else {
             videoRef.current.pause();
-            // Optional: Reset to 0 if we want it to always restart?
-            // User asked for "Thumbnail", which implies static first frame.
-            // Leaving it paused at current time is handled, but resetting to 0 ensures "Thumbnail" look.
-            // videoRef.current.currentTime = 0; 
         }
     }, [isActive]);
 
     return (
         <div className={`work-card reel-card ${isActive ? 'is-active' : ''}`}>
             <div className="card-video-bg">
-                {/* 
-                   VIDEO LAYER
-                   - Mounted if 'isMounted' is true (Near viewport)
-                   - If !isActive, it is PAUSED (showing current frame/first frame)
-                   - If isActive, it PLAYS
-                */}
                 {isMounted && (
                     <video
                         ref={videoRef}
-                        src={`${reel.src}#t=0.001`} // Force first frame seek
+                        src={`${reel.src}#t=0.001`}
                         muted
                         loop
                         playsInline
-                        preload="metadata" // Save data, just get the frame
+                        preload="metadata"
                         className="card-video"
                         style={{
                             position: 'absolute',
@@ -83,12 +82,11 @@ const ReelCard = ({ reel, isActive, isMounted }) => {
                             objectFit: 'cover',
                             zIndex: 2,
                             opacity: 1,
-                            backgroundColor: '#000' // Black background while loading
+                            backgroundColor: '#000'
                         }}
                     />
                 )}
 
-                {/* Fallback if unmounted (far off screen) */}
                 {!isMounted && (
                     <div style={{ width: '100%', height: '100%', background: '#111' }} />
                 )}
@@ -131,6 +129,97 @@ const PhotoCard = ({ photo }) => {
 };
 
 // ----------------------------------------------------------------------
+// Row Navigation Arrows with Infinite Loop
+// ----------------------------------------------------------------------
+
+const RowArrows = ({ rowRef, originalCount, gap = 30 }) => {
+    const scrollRow = useCallback((scrollDirection) => {
+        if (!rowRef.current) return;
+
+        const card = rowRef.current.querySelector('.work-card');
+        if (!card) return;
+
+        const cardWidth = card.offsetWidth;
+        const scrollAmount = (cardWidth + gap) * 2; // scroll 2 cards at a time
+
+        // Total width of one "set" of original items
+        const oneSetWidth = originalCount * (cardWidth + gap);
+
+        const currentX = gsap.getProperty(rowRef.current, 'x') || 0;
+        let newX = scrollDirection === 'left'
+            ? currentX + scrollAmount
+            : currentX - scrollAmount;
+
+        // Infinite loop: wrap around using modulo
+        // We have 5 repeated sets — keep x within the middle 3 sets range
+        // so the user never sees the edge
+        const minX = -(oneSetWidth * 4);  // don't go past 4th set
+        const maxX = oneSetWidth;          // don't go past 1st set boundary
+
+        if (newX < minX) {
+            // Jumped too far left — silently reset to equivalent position
+            gsap.set(rowRef.current, { x: newX + oneSetWidth });
+            newX = newX + oneSetWidth;
+        } else if (newX > maxX) {
+            // Jumped too far right — silently reset
+            gsap.set(rowRef.current, { x: newX - oneSetWidth });
+            newX = newX - oneSetWidth;
+        }
+
+        gsap.to(rowRef.current, {
+            x: newX,
+            duration: 0.6,
+            ease: 'power2.out',
+        });
+    }, [rowRef, originalCount, gap]);
+
+    return (
+        <div className="row-arrows">
+            <button
+                className="row-arrow row-arrow-left"
+                onClick={() => scrollRow('left')}
+                aria-label="Scroll left"
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </button>
+            <button
+                className="row-arrow row-arrow-right"
+                onClick={() => scrollRow('right')}
+                aria-label="Scroll right"
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 6 15 12 9 18" />
+                </svg>
+            </button>
+        </div>
+    );
+};
+
+// ----------------------------------------------------------------------
+// Scroll-to-Section Arrow
+// ----------------------------------------------------------------------
+
+const ScrollDownArrow = () => {
+    const handleClick = () => {
+        const section = document.getElementById('recent-work');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    return (
+        <button className="scroll-to-work-arrow" onClick={handleClick} aria-label="Scroll to our work">
+            <span className="scroll-arrow-text">Our Work</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+            </svg>
+        </button>
+    );
+};
+
+// ----------------------------------------------------------------------
 // MAIN COMPONENT
 // ----------------------------------------------------------------------
 
@@ -139,12 +228,15 @@ export default function RecentWork() {
     const row1Ref = useRef(null);
     const row2Ref = useRef(null);
 
-    // State to track status
     const [activeIndices, setActiveIndices] = useState([]);
     const [mountedIndices, setMountedIndices] = useState([]);
 
+    // Create repeated arrays (5x) for infinite loop
+    const reelsData = repeatArray(REELS_ROW_1, 5);
+    const photosData = repeatArray(PHOTOS_ROW_2, 5);
+
     // ----------------------------------------------------------------------
-    // Focus Mode Logic (3 Active, Others Paused)
+    // Focus Mode Logic
     // ----------------------------------------------------------------------
 
     useEffect(() => {
@@ -156,35 +248,30 @@ export default function RecentWork() {
             const viewportCenter = window.innerWidth / 2;
             const cards = Array.from(row1Ref.current.children);
 
-            // Calculate distance for all visible cards
             const cardDistances = cards.map((card, index) => {
                 const rect = card.getBoundingClientRect();
                 const cardCenter = rect.left + (rect.width / 2);
                 return {
                     index,
                     distance: Math.abs(cardCenter - viewportCenter),
-                    // Check if it's "close enough" to be mounted (e.g., within 1.5 screens)
                     isClose: (rect.right > -window.innerWidth && rect.left < window.innerWidth * 2)
                 };
             });
 
-            // 1. Determine Mounted (Close to viewport)
             const mounted = cardDistances
                 .filter(item => item.isClose)
                 .map(item => item.index);
 
             setMountedIndices(prev => {
-                // Optimization: compare simple arrays
                 if (prev.length !== mounted.length) return mounted;
                 return prev.every((val, i) => val === mounted[i]) ? prev : mounted;
             });
 
-            // 2. Determine Active (Top 3 closest)
             cardDistances.sort((a, b) => a.distance - b.distance);
 
             const active = cardDistances
                 .slice(0, 3)
-                .filter(item => item.distance < window.innerWidth) // Sanity check
+                .filter(item => item.distance < window.innerWidth)
                 .map(item => item.index);
 
             setActiveIndices(prev => {
@@ -206,7 +293,6 @@ export default function RecentWork() {
     useEffect(() => {
         const ctx = gsap.context(() => {
 
-            // Row 1: Move LEFT to RIGHT
             gsap.fromTo(row1Ref.current,
                 { x: -1200 },
                 {
@@ -221,7 +307,6 @@ export default function RecentWork() {
                 }
             );
 
-            // Row 2: Move RIGHT to LEFT
             gsap.fromTo(row2Ref.current,
                 { x: 0 },
                 {
@@ -241,8 +326,6 @@ export default function RecentWork() {
         return () => ctx.revert();
     }, []);
 
-    const doubledReels = [...REELS_ROW_1, ...REELS_ROW_1];
-
     return (
         <section ref={sectionRef} id="recent-work" className="recent-work-section">
             <div className="recent-work-header">
@@ -252,30 +335,32 @@ export default function RecentWork() {
 
             <div className="perspective-container">
                 {/* Row 1: REELS */}
-                <div
-                    ref={row1Ref}
-                    className="video-row row-1"
-                >
-                    {doubledReels.map((reel, i) => (
-                        <ReelCard
-                            key={`reel-${i}`}
-                            reel={reel}
-                            isActive={activeIndices.includes(i)}
-                            isMounted={mountedIndices.includes(i)}
-                        />
-                    ))}
+                <div className="row-wrapper">
+                    <RowArrows rowRef={row1Ref} originalCount={REELS_ROW_1.length} />
+                    <div ref={row1Ref} className="video-row row-1">
+                        {reelsData.map((reel, i) => (
+                            <ReelCard
+                                key={reel._key}
+                                reel={reel}
+                                isActive={activeIndices.includes(i)}
+                                isMounted={mountedIndices.includes(i)}
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 {/* Row 2: PHOTOS */}
-                <div
-                    ref={row2Ref}
-                    className="video-row row-2"
-                >
-                    {[...PHOTOS_ROW_2, ...PHOTOS_ROW_2].map((photo, i) => (
-                        <PhotoCard key={`photo-${i}`} photo={photo} />
-                    ))}
+                <div className="row-wrapper">
+                    <RowArrows rowRef={row2Ref} originalCount={PHOTOS_ROW_2.length} />
+                    <div ref={row2Ref} className="video-row row-2">
+                        {photosData.map((photo, i) => (
+                            <PhotoCard key={photo._key} photo={photo} />
+                        ))}
+                    </div>
                 </div>
             </div>
+
+            <ScrollDownArrow />
         </section>
     );
 }

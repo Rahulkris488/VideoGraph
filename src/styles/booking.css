@@ -974,3 +974,84 @@
         padding: 10px 12px;
     }
 }
+
+/* ═══════ ADDRESS AUTOCOMPLETE ═══════ */
+
+.address-autocomplete-wrapper {
+    position: relative;
+}
+
+.address-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.address-loading-spinner {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: addressSpin 0.6s linear infinite;
+}
+
+@keyframes addressSpin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+.address-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    background: var(--bg-card, #111);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    z-index: 50;
+    max-height: 240px;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.address-suggestion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.address-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.address-suggestion-item:hover {
+    background: rgba(174, 255, 0, 0.06);
+}
+
+.suggestion-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.suggestion-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.address-suggestion-item:hover .suggestion-text {
+    color: var(--text-primary);
+}

@@ -53,10 +53,7 @@ export default function Contact() {
                     <div className="contact-info-card social">
                         <h4>Follow</h4>
                         <div className="social-links">
-                            <a href="#">IG</a>
-                            <a href="#">YT</a>
-                            <a href="#">VM</a>
-                            <a href="#">LI</a>
+                            <a href="https://www.instagram.com/savagedigitalmedia_/" target="_blank" rel="noopener noreferrer">IG</a>
                         </div>
                     </div>
                 </div>

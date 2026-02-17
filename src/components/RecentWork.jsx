@@ -231,6 +231,8 @@ export default function RecentWork() {
     const sectionRef = useRef(null);
     const row1Ref = useRef(null);
     const row2Ref = useRef(null);
+    const scrollRef1 = useRef(null);
+    const scrollRef2 = useRef(null);
 
     const [activeIndices, setActiveIndices] = useState([]);
     const [mountedIndices, setMountedIndices] = useState([]);
@@ -325,6 +327,43 @@ export default function RecentWork() {
         return () => clearTimeout(timer);
     }, []);
 
+    /* ─── SCROLL ANIMATION (PARALLAX ON WRAPPERS) ─── */
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            // Animate wrapper 1 (moves right: -1200 -> 0)
+            gsap.fromTo(scrollRef1.current,
+                { x: -1200 },
+                {
+                    x: 0,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 1
+                    }
+                }
+            );
+
+            // Animate wrapper 2 (moves left: 0 -> -1200)
+            gsap.fromTo(scrollRef2.current,
+                { x: 0 },
+                {
+                    x: -1200,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 1
+                    }
+                }
+            );
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
         <section ref={sectionRef} id="recent-work" className="recent-work-section">
             <div className="recent-work-header">
@@ -336,25 +375,29 @@ export default function RecentWork() {
                 {/* Row 1: REELS */}
                 <div className="row-wrapper">
                     <RowArrows rowRef={row1Ref} originalCount={REELS_ROW_1.length} />
-                    <div ref={row1Ref} className="video-row row-1">
-                        {reelsData.map((reel, i) => (
-                            <ReelCard
-                                key={reel._key}
-                                reel={reel}
-                                isActive={activeIndices.includes(i)}
-                                isMounted={mountedIndices.includes(i)}
-                            />
-                        ))}
+                    <div ref={scrollRef1} className="row-scroll-container">
+                        <div ref={row1Ref} className="video-row row-1">
+                            {reelsData.map((reel, i) => (
+                                <ReelCard
+                                    key={reel._key}
+                                    reel={reel}
+                                    isActive={activeIndices.includes(i)}
+                                    isMounted={mountedIndices.includes(i)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
                 {/* Row 2: PHOTOS */}
                 <div className="row-wrapper">
                     <RowArrows rowRef={row2Ref} originalCount={PHOTOS_ROW_2.length} />
-                    <div ref={row2Ref} className="video-row row-2">
-                        {photosData.map((photo, i) => (
-                            <PhotoCard key={photo._key} photo={photo} />
-                        ))}
+                    <div ref={scrollRef2} className="row-scroll-container">
+                        <div ref={row2Ref} className="video-row row-2">
+                            {photosData.map((photo, i) => (
+                                <PhotoCard key={photo._key} photo={photo} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -132,12 +132,16 @@ const PhotoCard = ({ photo }) => {
 // Row Navigation Arrows with Infinite Loop
 // ----------------------------------------------------------------------
 
-const RowArrows = ({ rowRef, originalCount, gap = 30 }) => {
+const RowArrows = ({ rowRef, originalCount }) => {
     const scrollRow = useCallback((scrollDirection) => {
         if (!rowRef.current) return;
 
         const card = rowRef.current.querySelector('.work-card');
         if (!card) return;
+
+
+        const style = window.getComputedStyle(rowRef.current);
+        const gap = parseFloat(style.gap) || 30;
 
         const cardWidth = card.offsetWidth;
         const scrollAmount = (cardWidth + gap) * 2; // scroll 2 cards at a time
@@ -154,7 +158,7 @@ const RowArrows = ({ rowRef, originalCount, gap = 30 }) => {
         // We have 5 repeated sets — keep x within the middle 3 sets range
         // so the user never sees the edge
         const minX = -(oneSetWidth * 4);  // don't go past 4th set
-        const maxX = oneSetWidth;          // don't go past 1st set boundary
+        const maxX = 0;          // don't go past 1st set boundary
 
         if (newX < minX) {
             // Jumped too far left — silently reset to equivalent position
@@ -171,7 +175,7 @@ const RowArrows = ({ rowRef, originalCount, gap = 30 }) => {
             duration: 0.6,
             ease: 'power2.out',
         });
-    }, [rowRef, originalCount, gap]);
+    }, [rowRef, originalCount]);
 
     return (
         <div className="row-arrows">
@@ -290,40 +294,35 @@ export default function RecentWork() {
     // GSAP Scroll Animation
     // ----------------------------------------------------------------------
 
+    /* ─── SCROLL INITIALIZATION ─── */
     useEffect(() => {
-        const ctx = gsap.context(() => {
+        // Initialize rows to the middle set (index 2 of 5)
+        // This ensures we have buffer on both left and right for infinite scrolling
+        const initRow = (rowRef, count) => {
+            if (!rowRef.current) return;
+            const card = rowRef.current.querySelector('.work-card');
+            if (card) {
+                const style = window.getComputedStyle(rowRef.current);
+                const gap = parseFloat(style.gap) || 30; // Get dynamic gap (30px desktop, 15px mobile)
 
-            gsap.fromTo(row1Ref.current,
-                { x: -1200 },
-                {
-                    x: 0,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 1
-                    }
-                }
-            );
+                const cardWidth = card.offsetWidth;
+                const oneSetWidth = count * (cardWidth + gap);
 
-            gsap.fromTo(row2Ref.current,
-                { x: 0 },
-                {
-                    x: -1200,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 1
-                    }
-                }
-            );
+                // Start at the beginning of the 3rd set
+                // 5 sets total: [0][1][2][3][4]
+                // We want to see [2]. So we move left by 2 sets width.
+                // x = -(oneSetWidth * 2)
+                gsap.set(rowRef.current, { x: -(oneSetWidth * 2) });
+            }
+        };
 
-        }, sectionRef);
+        // Delay slightly to ensure layout is ready
+        const timer = setTimeout(() => {
+            initRow(row1Ref, REELS_ROW_1.length);
+            initRow(row2Ref, PHOTOS_ROW_2.length);
+        }, 100);
 
-        return () => ctx.revert();
+        return () => clearTimeout(timer);
     }, []);
 
     return (

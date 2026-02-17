@@ -5,11 +5,11 @@ console.log('📦 emailService.js LOADED');
 // ============================================
 // EmailJS Configuration
 // ============================================
-const EMAILJS_SERVICE_ID = 'service_dzob1f2';
-const EMAILJS_CUSTOMER_TEMPLATE_ID = 'template_0lroqnz';
-const EMAILJS_PROVIDER_TEMPLATE_ID = 'template_qanp6c8';
-const EMAILJS_PUBLIC_KEY = 'bS0r5VmlPI7Ottbfg';
-const PROVIDER_EMAIL = 'rahulkrishnatp12@gmail.com';
+const EMAILJS_SERVICE_ID = import.meta.env.EMAILJS_SERVICE_ID;
+const EMAILJS_CUSTOMER_TEMPLATE_ID = import.meta.env.EMAILJS_CUSTOMER_TEMPLATE_ID;
+const EMAILJS_PROVIDER_TEMPLATE_ID = import.meta.env.EMAILJS_PROVIDER_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = import.meta.env.EMAILJS_PUBLIC_KEY;
+const PROVIDER_EMAIL = import.meta.env.PROVIDER_EMAIL;
 
 console.log('⚙️ Config:', {
     EMAILJS_SERVICE_ID,
@@ -76,6 +76,8 @@ function buildParams(bookingData) {
         sqft: propertyDetails?.sqft || 'N/A',
         brokerage: propertyDetails?.brokerage || 'N/A',
         lockbox: propertyDetails?.lockbox || 'N/A',
+        lockbox_pin: propertyDetails?.lockboxPin || 'N/A',
+        access_notes: propertyDetails?.accessNotes || 'N/A',
         listing_date: propertyDetails?.listingDate || 'N/A',
     };
 

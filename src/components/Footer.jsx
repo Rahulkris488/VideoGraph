@@ -90,7 +90,7 @@ export default function Footer() {
                         © {currentYear} Savage Media. All rights reserved.
                     </p>
                     <p className="made-with">
-                        Made with <span className="heart">♥</span> in Los Angeles
+                        Made with <span className="heart">♥</span> in Greater Toronto Area
                     </p>
                 </div>
             </div>

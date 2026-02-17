@@ -10,65 +10,73 @@ const SERVICE_PACKS = [
         id: 1,
         name: "PHOTOGRAPHY",
         duration: "1 hour",
+        price: "$180 – $250 CAD",
         description: "Interior and exterior HDR photography. Includes listing landing page.",
         includes: ["Photography", "Landing Page"],
         icon: "📷",
     },
     {
         id: 2,
-        name: "PHOTO+VIDEO",
+        name: "PHOTO + VIDEO",
         duration: "1 hour 30 minutes",
-        description: "Interior/exterior photography. Choose from a standard or vertical video to showcase your listing. Includes listing landing page.",
+        price: "$350 – $500 CAD",
+        description: "Photos + listing video. Choose from standard or vertical video.",
         includes: ["Photography", "Videography", "Landing Page"],
         icon: "🎬",
     },
     {
         id: 3,
-        name: "3D TOUR AND FLOORPLANS",
-        duration: "1 hour",
-        description: "3D virtual tour, floor plans, and website landing page.",
-        includes: ["Virtual Tour", "Floor Plans", "Landing Page"],
-        icon: "🏠",
-    },
-    {
-        id: 4,
-        name: "PHOTO + 3D TOUR",
-        duration: "1 hour 30 minutes",
-        description: "3D virtual tour, floor plans, and website landing page. Floor plans include measurements and sq/ft calculations.",
-        includes: ["Photography", "Virtual Tour", "Floor Plans", "Landing Page"],
-        icon: "📐",
-    },
-    {
-        id: 5,
-        name: "PHOTO+VIRTUAL TOUR",
-        duration: "—",
-        description: "Interior/exterior photography with full virtual tour experience, floor plans, and landing page.",
-        includes: ["Photography", "Virtual Tour", "Floor Plans", "Landing Page"],
-        icon: "🔄",
-    },
-    {
-        id: 6,
-        name: "PHOTO + 3D TOUR + DRONE",
+        name: "PHOTO + VIDEO + DRONE",
         duration: "2 hours",
-        description: "Interior/exterior camera photos, drone photos, and 3D Virtual tour with floor plans.",
-        includes: ["Photography", "Virtual Tour", "Floor Plans", "Landing Page", "Drone"],
-        icon: "🚁",
-    },
-    {
-        id: 7,
-        name: "PHOTO+VIDEO+DRONE",
-        duration: "—",
-        description: "Interior/exterior photography, professional videography, and aerial drone footage with landing page.",
+        price: "$450 – $650 CAD",
+        description: "Interior/exterior photos, video, and aerial drone footage. Drone adds strong value in GTA market.",
         includes: ["Photography", "Videography", "Drone", "Landing Page"],
         icon: "✈️",
     },
     {
-        id: 8,
-        name: "ONE STOP SHOP",
+        id: 4,
+        name: "PHOTO + 3D TOUR + DRONE",
         duration: "2 hours",
-        description: "All-in-one package for listing media. Includes: Interior/exterior photos, listing video, virtual tour, floor plans, and website landing page. *SEE ADD ON SERVICES*",
+        price: "$450 – $600 CAD",
+        description: "Matterport style 3D tour, floor plans, plus drone photos.",
+        includes: ["Photography", "Virtual Tour", "Floor Plans", "Drone", "Landing Page"],
+        icon: "🚁",
+    },
+    {
+        id: 5,
+        name: "3D TOUR + FLOOR PLANS",
+        duration: "1 hour",
+        price: "$150 – $250 CAD",
+        description: "3D virtual tour and floor plans. Price depends on square footage.",
+        includes: ["Virtual Tour", "Floor Plans", "Landing Page"],
+        icon: "🏠",
+    },
+    {
+        id: 6,
+        name: "PHOTO + 3D TOUR",
+        duration: "1 hour 30 minutes",
+        price: "$300 – $420 CAD",
+        description: "Good middle package for realtors. Interior/exterior photos + 3D tour.",
+        includes: ["Photography", "Virtual Tour", "Landing Page"],
+        icon: "📐",
+    },
+    {
+        id: 7,
+        name: "ONE STOP SHOP",
+        duration: "2 hours 30 minutes",
+        price: "$550 – $750 CAD",
+        description: "All-in-one package: Photos, video, virtual tour, floor plans, and website. Best-selling sweet spot.",
         includes: ["Photography", "Videography", "Virtual Tour", "Floor Plans", "Landing Page"],
         icon: "⭐",
+    },
+    {
+        id: 8,
+        name: "ULTRA PACKAGE",
+        duration: "3+ hours",
+        price: "$900 – $1,500 CAD",
+        description: "Luxury listings service. 3 videos, drone, tour, and marketing sheets.",
+        includes: ["Photography", "Videography", "Drone", "Virtual Tour", "Floor Plans", "Marketing"],
+        icon: "💎",
     },
 ];
 
@@ -96,6 +104,18 @@ const TIME_SLOTS = [
 ];
 
 const STEP_LABELS = ["Package", "Date", "Time", "Details", "Property", "Review"];
+
+// Example images to show in each package
+const PACKAGE_IMAGES = [
+    "/assets/work/photos/IMA05242.jpg",
+    "/assets/work/photos/IMA05237.jpg",
+    "/assets/work/photos/IMA05257.jpg",
+    "/assets/work/photos/IMA05179.jpg",
+    "/assets/work/photos/IMA05232.jpg",
+    "/assets/work/photos/IMA05207.jpg",
+    "/assets/work/photos/IMA05247.jpg",
+    "/assets/work/photos/IMA05342.jpg",
+];
 
 /* ─── HELPERS ─── */
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -134,7 +154,7 @@ export default function BookingPage() {
 
     // Property details
     const [propertyDetails, setPropertyDetails] = useState({
-        address: "", sqft: "", brokerage: "", lockbox: "No", listingDate: ""
+        address: "", sqft: "", brokerage: "", lockbox: "No", lockboxPin: "", accessNotes: "", listingDate: ""
     });
 
     // Submission state
@@ -299,7 +319,7 @@ export default function BookingPage() {
     /* ─── RENDER STEPS ─── */
     const renderStep1 = () => (
         <div className="booking-packs-grid">
-            {SERVICE_PACKS.map(pack => (
+            {SERVICE_PACKS.map((pack, i) => (
                 <div
                     key={pack.id}
                     className={`pack-card ${selectedPack?.id === pack.id ? "selected" : ""}`}
@@ -307,17 +327,35 @@ export default function BookingPage() {
                 >
                     <div className="pack-card-header">
                         <div className="pack-icon">{pack.icon}</div>
-                        <div className="pack-info">
+                        <div className="pack-header-text">
                             <h3 className="pack-name">{pack.name}</h3>
-                            <span className="pack-duration">{pack.duration}</span>
+                            <div className="pack-meta">
+                                <span className="pack-duration">{pack.duration}</span>
+                                <span className="pack-divider">•</span>
+                                <span className="pack-price">{pack.price}</span>
+                            </div>
                         </div>
                     </div>
-                    <p className="pack-desc">{pack.description}</p>
-                    <div className="pack-includes">
-                        {pack.includes.map((item, i) => (
-                            <span key={i} className="pack-tag">{item}</span>
-                        ))}
+
+                    <div className="pack-info">
+                        <p className="pack-desc">{pack.description}</p>
+                        <div className="pack-includes">
+                            {pack.includes.map((item, idx) => (
+                                <span key={idx} className="pack-tag">{item}</span>
+                            ))}
+                        </div>
+
+                        {/* Package Image */}
+                        <div className="pack-image-container">
+                            <img
+                                src={PACKAGE_IMAGES[i % PACKAGE_IMAGES.length]}
+                                alt={pack.name}
+                                className="pack-card-image"
+                                loading="lazy"
+                            />
+                        </div>
                     </div>
+
                     <button
                         className={`btn ${selectedPack?.id === pack.id ? "btn-primary" : "btn-outline"} pack-book-btn`}
                         onClick={(e) => { e.stopPropagation(); setSelectedPack(pack); goNext(); }}
@@ -537,7 +575,7 @@ export default function BookingPage() {
                         >Yes</button>
                         <button
                             className={`lockbox-option ${propertyDetails.lockbox === "No" ? "active" : ""}`}
-                            onClick={() => setPropertyDetails(p => ({ ...p, lockbox: "No" }))}
+                            onClick={() => setPropertyDetails(p => ({ ...p, lockbox: "No", lockboxPin: "" }))}
                         >No</button>
                     </div>
                 </div>
@@ -549,6 +587,35 @@ export default function BookingPage() {
                         onChange={e => setPropertyDetails(p => ({ ...p, listingDate: e.target.value }))}
                     />
                 </div>
+            </div>
+
+            {/* Lockbox PIN Section - slides down when Yes */}
+            <div className={`lockbox-details ${propertyDetails.lockbox === "Yes" ? "lockbox-details-visible" : ""}`}>
+                {propertyDetails.lockbox === "Yes" && (
+                    <div className="booking-form-group">
+                        <label>Lockbox PIN / Code</label>
+                        <input
+                            type="text"
+                            placeholder="Enter lockbox code (e.g. 1234)"
+                            value={propertyDetails.lockboxPin}
+                            onChange={e => setPropertyDetails(p => ({ ...p, lockboxPin: e.target.value }))}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Access Notes - always visible */}
+            <div className="booking-form-group">
+                <label>{propertyDetails.lockbox === "Yes" ? "Additional Access Notes (Optional)" : "How to Access the Property"}</label>
+                <textarea
+                    className="access-notes-textarea"
+                    placeholder={propertyDetails.lockbox === "Yes"
+                        ? "Any extra instructions (e.g. lockbox is on the side gate, ring doorbell first...)"
+                        : "Please describe how our team can access the property (e.g. meet at front door, contact agent, gate code...)"}
+                    value={propertyDetails.accessNotes}
+                    onChange={e => setPropertyDetails(p => ({ ...p, accessNotes: e.target.value }))}
+                    rows={3}
+                />
             </div>
         </div>
     );
@@ -612,6 +679,18 @@ export default function BookingPage() {
                     <span className="review-label">Lockbox</span>
                     <span className="review-value">{propertyDetails.lockbox}</span>
                 </div>
+                {propertyDetails.lockbox === "Yes" && propertyDetails.lockboxPin && (
+                    <div className="review-row">
+                        <span className="review-label">Lockbox PIN</span>
+                        <span className="review-value">{propertyDetails.lockboxPin}</span>
+                    </div>
+                )}
+                {propertyDetails.accessNotes && (
+                    <div className="review-row">
+                        <span className="review-label">Access Notes</span>
+                        <span className="review-value">{propertyDetails.accessNotes}</span>
+                    </div>
+                )}
                 <div className="review-row">
                     <span className="review-label">Listing Date</span>
                     <span className="review-value">{propertyDetails.listingDate || "—"}</span>

@@ -40,15 +40,15 @@ export default function Contact() {
                 <div className="contact-info">
                     <div className="contact-info-card">
                         <h4>Email</h4>
-                        <a href="mailto:hello@studio.com">hello@studio.com</a>
+                        <a href="mailto:Info@savagedigitalmedia.com">Info@savagedigitalmedia.com</a>
                     </div>
                     <div className="contact-info-card">
                         <h4>Phone</h4>
-                        <a href="tel:+15551234567">+1 (555) 123-4567</a>
+                        <a href="tel:+14379709902">+1 (437)-970-9902</a>
                     </div>
                     <div className="contact-info-card">
                         <h4>Location</h4>
-                        <span>Los Angeles, CA</span>
+                        <span>Greater Toronto Area</span>
                     </div>
                     <div className="contact-info-card social">
                         <h4>Follow</h4>

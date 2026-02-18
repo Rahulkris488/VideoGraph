@@ -82,10 +82,6 @@ export async function sendCustomerEmail(bookingData) {
         );
         return result;
     } catch (error) {
-        console.error('❌ Customer email FAILED');
-        console.error('❌ Error:', error);
-        console.error('❌ Error message:', error?.message);
-        console.error('❌ Error text:', error?.text);
         throw error;
     }
 }
@@ -114,10 +110,6 @@ export async function sendProviderEmail(bookingData) {
         );
         return result;
     } catch (error) {
-        console.error('❌ Provider email FAILED');
-        console.error('❌ Error:', error);
-        console.error('❌ Error message:', error?.message);
-        console.error('❌ Error text:', error?.text);
         throw error;
     }
 }

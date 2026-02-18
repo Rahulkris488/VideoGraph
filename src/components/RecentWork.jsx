@@ -77,10 +77,8 @@ const ReelCard = React.memo(({ reel, isActive, isMounted }) => {
         } else {
             // Pause immediately when not active
             video.pause();
-            if (video.currentTime !== 0) {
-                // Optional: reset to start if desired, or keep position
-                // video.currentTime = 0; 
-            }
+            // Reset to start so it's fresh when becoming active again
+            video.currentTime = 0;
         }
 
         return () => {
@@ -318,10 +316,15 @@ export default function RecentWork() {
         const tick = () => {
             if (!row1Ref.current) return;
 
-            // Get current X position of the row (driven by drag or scroll)
-            const currentX = gsap.getProperty(row1Ref.current, "x");
+            // Get current X position of the inner row (driven by arrows)
+            const innerX = gsap.getProperty(row1Ref.current, "x") || 0;
+            // Also account for the parallax wrapper offset so center detection
+            // stays accurate as the user scrolls the page
+            const wrapperX = scrollRef1.current
+                ? (gsap.getProperty(scrollRef1.current, "x") || 0)
+                : 0;
+            const currentX = innerX + wrapperX;
 
-            // Correct center calculation:
             // Calculate float index at center
             const centerIndexFloat = (viewportCenter - currentX - (cardWidth / 2)) / totalItemWidth + 0.5;
             const centerIndex = Math.round(centerIndexFloat);

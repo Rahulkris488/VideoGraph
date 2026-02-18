@@ -193,8 +193,7 @@ export default function BookingPage() {
                 const data = await res.json();
                 setAddressSuggestions(data);
                 setShowSuggestions(data.length > 0);
-            } catch (err) {
-                console.error('Address search failed:', err);
+            } catch {
                 setAddressSuggestions([]);
             } finally {
                 setAddressLoading(false);

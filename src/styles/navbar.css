@@ -35,6 +35,23 @@
     font-weight: 700;
 }
 
+.logo-img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    transition: height 0.3s ease;
+}
+
+.navbar.scrolled .logo-img {
+    height: 70px;
+}
+
+@media (max-width: 768px) {
+    .logo-img {
+        height: 55px;
+    }
+}
+
 .logo-dot {
     width: 6px;
     height: 6px;

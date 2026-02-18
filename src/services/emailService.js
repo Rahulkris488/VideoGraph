@@ -1,39 +1,19 @@
 import emailjs from '@emailjs/browser';
 
-console.log('📦 emailService.js LOADED');
-
 // ============================================
 // EmailJS Configuration
 // ============================================
-const EMAILJS_SERVICE_ID = import.meta.env.EMAILJS_SERVICE_ID;
-const EMAILJS_CUSTOMER_TEMPLATE_ID = import.meta.env.EMAILJS_CUSTOMER_TEMPLATE_ID;
-const EMAILJS_PROVIDER_TEMPLATE_ID = import.meta.env.EMAILJS_PROVIDER_TEMPLATE_ID;
-const EMAILJS_PUBLIC_KEY = import.meta.env.EMAILJS_PUBLIC_KEY;
-const PROVIDER_EMAIL = import.meta.env.PROVIDER_EMAIL;
-
-console.log('⚙️ Config:', {
-    EMAILJS_SERVICE_ID,
-    EMAILJS_CUSTOMER_TEMPLATE_ID,
-    EMAILJS_PROVIDER_TEMPLATE_ID,
-    EMAILJS_PUBLIC_KEY,
-    PROVIDER_EMAIL,
-});
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_CUSTOMER_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_CUSTOMER_TEMPLATE_ID;
+const EMAILJS_PROVIDER_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_PROVIDER_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const PROVIDER_EMAIL = import.meta.env.VITE_PROVIDER_EMAIL;
 
 /**
  * Build flat params that map 1:1 to {{placeholders}} in the EmailJS template.
  */
 function buildParams(bookingData) {
-    console.log('🔨 buildParams() called');
-    console.log('🔨 Raw bookingData:', JSON.stringify(bookingData, null, 2));
-
     const { selectedPack, selectedDate, selectedTime, personalDetails, propertyDetails } = bookingData;
-
-    console.log('🔨 Destructured:');
-    console.log('   selectedPack:', selectedPack);
-    console.log('   selectedDate:', selectedDate);
-    console.log('   selectedTime:', selectedTime);
-    console.log('   personalDetails:', personalDetails);
-    console.log('   propertyDetails:', propertyDetails);
 
     // Format date
     const appointment_date = selectedDate
@@ -41,7 +21,6 @@ function buildParams(bookingData) {
             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
         })
         : 'Not selected';
-    console.log('📅 appointment_date:', appointment_date);
 
     // Join includes array
     const includes = selectedPack?.includes
@@ -49,18 +28,15 @@ function buildParams(bookingData) {
             ? selectedPack.includes.join(', ')
             : String(selectedPack.includes))
         : 'N/A';
-    console.log('📋 includes:', includes);
 
     // Phone with country code
     const client_phone = personalDetails?.countryCode && personalDetails?.phone
         ? personalDetails.countryCode + ' ' + personalDetails.phone
         : (personalDetails?.phone || 'N/A');
-    console.log('📞 client_phone:', client_phone);
 
     // Full name
     const client_name = [personalDetails?.firstName, personalDetails?.lastName]
         .filter(Boolean).join(' ') || 'N/A';
-    console.log('👤 client_name:', client_name);
 
     const params = {
         package_name: selectedPack?.name || 'N/A',
@@ -81,11 +57,6 @@ function buildParams(bookingData) {
         listing_date: propertyDetails?.listingDate || 'N/A',
     };
 
-    console.log('✅ buildParams() result:');
-    Object.entries(params).forEach(([key, value]) => {
-        console.log(`   ${key}: "${value}"`);
-    });
-
     return params;
 }
 
@@ -93,10 +64,6 @@ function buildParams(bookingData) {
  * Send confirmation email to the customer
  */
 export async function sendCustomerEmail(bookingData) {
-    console.log('════════════════════════════════════════');
-    console.log('📧 sendCustomerEmail() CALLED');
-    console.log('════════════════════════════════════════');
-
     const data = buildParams(bookingData);
 
     const templateParams = {
@@ -106,17 +73,6 @@ export async function sendCustomerEmail(bookingData) {
         subject: 'Booking Confirmation - ' + data.package_name,
     };
 
-    console.log('📧 FINAL templateParams being sent to EmailJS:');
-    Object.entries(templateParams).forEach(([key, value]) => {
-        console.log(`   ${key}: "${value}"`);
-    });
-
-    console.log('📧 Calling emailjs.send() with:');
-    console.log('   Service ID:', EMAILJS_SERVICE_ID);
-    console.log('   Template ID:', EMAILJS_CUSTOMER_TEMPLATE_ID);
-    console.log('   Public Key:', EMAILJS_PUBLIC_KEY);
-    console.log('   Param count:', Object.keys(templateParams).length);
-
     try {
         const result = await emailjs.send(
             EMAILJS_SERVICE_ID,
@@ -124,10 +80,6 @@ export async function sendCustomerEmail(bookingData) {
             templateParams,
             EMAILJS_PUBLIC_KEY
         );
-        console.log('✅ Customer email SENT successfully');
-        console.log('✅ Result:', result);
-        console.log('✅ Result.text:', result.text);
-        console.log('✅ Result.status:', result.status);
         return result;
     } catch (error) {
         console.error('❌ Customer email FAILED');
@@ -142,10 +94,6 @@ export async function sendCustomerEmail(bookingData) {
  * Send notification email to the service provider
  */
 export async function sendProviderEmail(bookingData) {
-    console.log('════════════════════════════════════════');
-    console.log('📧 sendProviderEmail() CALLED');
-    console.log('════════════════════════════════════════');
-
     const data = buildParams(bookingData);
 
     const templateParams = {
@@ -157,16 +105,6 @@ export async function sendProviderEmail(bookingData) {
         subject: 'New Booking Request - ' + data.package_name,
     };
 
-    console.log('📧 FINAL templateParams being sent to EmailJS:');
-    Object.entries(templateParams).forEach(([key, value]) => {
-        console.log(`   ${key}: "${value}"`);
-    });
-
-    console.log('📧 Calling emailjs.send() with:');
-    console.log('   Service ID:', EMAILJS_SERVICE_ID);
-    console.log('   Template ID:', EMAILJS_PROVIDER_TEMPLATE_ID);
-    console.log('   Public Key:', EMAILJS_PUBLIC_KEY);
-
     try {
         const result = await emailjs.send(
             EMAILJS_SERVICE_ID,
@@ -174,10 +112,6 @@ export async function sendProviderEmail(bookingData) {
             templateParams,
             EMAILJS_PUBLIC_KEY
         );
-        console.log('✅ Provider email SENT successfully');
-        console.log('✅ Result:', result);
-        console.log('✅ Result.text:', result.text);
-        console.log('✅ Result.status:', result.status);
         return result;
     } catch (error) {
         console.error('❌ Provider email FAILED');
@@ -192,17 +126,10 @@ export async function sendProviderEmail(bookingData) {
  * Send both emails
  */
 export async function sendBookingEmails(bookingData) {
-    console.log('🚀🚀🚀 sendBookingEmails() CALLED 🚀🚀🚀');
-    console.log('🚀 bookingData keys:', Object.keys(bookingData));
-
     const results = await Promise.allSettled([
         sendCustomerEmail(bookingData),
         sendProviderEmail(bookingData),
     ]);
-
-    console.log('📊 Both email results:');
-    console.log('   Customer:', results[0].status, results[0].status === 'rejected' ? results[0].reason : '');
-    console.log('   Provider:', results[1].status, results[1].status === 'rejected' ? results[1].reason : '');
 
     const output = {
         customerSent: results[0].status === 'fulfilled',
@@ -211,8 +138,6 @@ export async function sendBookingEmails(bookingData) {
             .filter(r => r.status === 'rejected')
             .map(r => r.reason),
     };
-
-    console.log('📊 Final output:', output);
 
     return output;
 }

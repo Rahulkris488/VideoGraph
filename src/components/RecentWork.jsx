@@ -44,22 +44,48 @@ const repeatArray = (arr, times) => {
 // Focus-Mode Reel Card
 // ----------------------------------------------------------------------
 
-const ReelCard = ({ reel, isActive, isMounted }) => {
+// ----------------------------------------------------------------------
+// Focus-Mode Reel Card (Memoized)
+// ----------------------------------------------------------------------
+
+const ReelCard = React.memo(({ reel, isActive, isMounted }) => {
     const videoRef = useRef(null);
+    const playTimeoutRef = useRef(null);
 
     useEffect(() => {
-        if (!videoRef.current) return;
+        const video = videoRef.current;
+        if (!video) return;
+
+        // Clear any pending play request
+        if (playTimeoutRef.current) {
+            clearTimeout(playTimeoutRef.current);
+            playTimeoutRef.current = null;
+        }
 
         if (isActive) {
-            const playPromise = videoRef.current.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.warn("Autoplay prevented", error);
-                });
-            }
+            // "Stop the scroll and then a sec pause"
+            // We add a delay before playing to ensure scrolling has likely stopped/slowed
+            // and to prevent rapid play/pause calls during fast scrolls.
+            playTimeoutRef.current = setTimeout(() => {
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Autoplay prevented or interrupted is common, ignore warning
+                    });
+                }
+            }, 500); // 500ms delay
         } else {
-            videoRef.current.pause();
+            // Pause immediately when not active
+            video.pause();
+            if (video.currentTime !== 0) {
+                // Optional: reset to start if desired, or keep position
+                // video.currentTime = 0; 
+            }
         }
+
+        return () => {
+            if (playTimeoutRef.current) clearTimeout(playTimeoutRef.current);
+        };
     }, [isActive]);
 
     return (
@@ -93,13 +119,17 @@ const ReelCard = ({ reel, isActive, isMounted }) => {
             </div>
         </div>
     );
-};
+});
 
 // ----------------------------------------------------------------------
 // Lazy Photo Card
 // ----------------------------------------------------------------------
 
-const PhotoCard = ({ photo }) => {
+// ----------------------------------------------------------------------
+// Lazy Photo Card (Memoized)
+// ----------------------------------------------------------------------
+
+const PhotoCard = React.memo(({ photo }) => {
     const cardRef = useRef(null);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -126,10 +156,14 @@ const PhotoCard = ({ photo }) => {
             />
         </div>
     );
-};
+});
 
 // ----------------------------------------------------------------------
 // Row Navigation Arrows with Infinite Loop
+// ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
+// Row Navigation Arrows (Single Item Scroll)
 // ----------------------------------------------------------------------
 
 const RowArrows = ({ rowRef, originalCount }) => {
@@ -143,8 +177,11 @@ const RowArrows = ({ rowRef, originalCount }) => {
         const style = window.getComputedStyle(rowRef.current);
         const gap = parseFloat(style.gap) || 30;
 
-        const cardWidth = card.offsetWidth;
-        const scrollAmount = (cardWidth + gap) * 2; // scroll 2 cards at a time
+        // Use getBoundingClientRect for accurate width
+        const cardWidth = card.getBoundingClientRect().width;
+
+        // SCROLL EXACTLY ONE ITEM
+        const scrollAmount = cardWidth + gap;
 
         // Total width of one "set" of original items
         const oneSetWidth = originalCount * (cardWidth + gap);
@@ -154,26 +191,30 @@ const RowArrows = ({ rowRef, originalCount }) => {
             ? currentX + scrollAmount
             : currentX - scrollAmount;
 
-        // Infinite loop: wrap around using modulo
-        // We have 5 repeated sets — keep x within the middle 3 sets range
-        // so the user never sees the edge
-        const minX = -(oneSetWidth * 4);  // don't go past 4th set
-        const maxX = 0;          // don't go past 1st set boundary
+        // Infinite loop: wrap around
+        // We have 5 repeated sets. 
+        // We keep position roughly in the middle sets (index 1, 2, 3).
+        const minX = -(oneSetWidth * 3.5);
+        const maxX = -(oneSetWidth * 0.5);
 
+        // Immediate wrap-around check before animating
+        // logic: if we are going too far, reset physically to an equivalent position
+        // in a different set, then animate to the target.
         if (newX < minX) {
-            // Jumped too far left — silently reset to equivalent position
-            gsap.set(rowRef.current, { x: newX + oneSetWidth });
-            newX = newX + oneSetWidth;
+            const resetX = newX + oneSetWidth;
+            gsap.set(rowRef.current, { x: currentX + oneSetWidth });
+            newX = resetX; // destination
         } else if (newX > maxX) {
-            // Jumped too far right — silently reset
-            gsap.set(rowRef.current, { x: newX - oneSetWidth });
-            newX = newX - oneSetWidth;
+            const resetX = newX - oneSetWidth;
+            gsap.set(rowRef.current, { x: currentX - oneSetWidth });
+            newX = resetX; // destination
         }
 
         gsap.to(rowRef.current, {
             x: newX,
-            duration: 0.6,
+            duration: 0.5,
             ease: 'power2.out',
+            overwrite: true // Ensure we kill previous conflicting tweens
         });
     }, [rowRef, originalCount]);
 
@@ -238,59 +279,100 @@ export default function RecentWork() {
     const [mountedIndices, setMountedIndices] = useState([]);
 
     // Create repeated arrays (5x) for infinite loop
-    const reelsData = repeatArray(REELS_ROW_1, 5);
-    const photosData = repeatArray(PHOTOS_ROW_2, 5);
+    const reelsData = React.useMemo(() => repeatArray(REELS_ROW_1, 5), []);
+    const photosData = React.useMemo(() => repeatArray(PHOTOS_ROW_2, 5), []);
 
     // ----------------------------------------------------------------------
     // Focus Mode Logic
     // ----------------------------------------------------------------------
 
+    // ----------------------------------------------------------------------
+    // Focus Mode Logic (Optimized for 60fps)
+    // ----------------------------------------------------------------------
+
     useEffect(() => {
-        let rafId;
+        let cardWidth = 300; // Default fallback
+        let gap = 30; // Default fallback
+        let totalItemWidth = 330;
+        let viewportCenter = window.innerWidth / 2;
 
-        const checkFocus = () => {
-            if (!row1Ref.current) return;
-
-            const viewportCenter = window.innerWidth / 2;
-            const cards = Array.from(row1Ref.current.children);
-
-            const cardDistances = cards.map((card, index) => {
-                const rect = card.getBoundingClientRect();
-                const cardCenter = rect.left + (rect.width / 2);
-                return {
-                    index,
-                    distance: Math.abs(cardCenter - viewportCenter),
-                    isClose: (rect.right > -window.innerWidth && rect.left < window.innerWidth * 2)
-                };
-            });
-
-            const mounted = cardDistances
-                .filter(item => item.isClose)
-                .map(item => item.index);
-
-            setMountedIndices(prev => {
-                if (prev.length !== mounted.length) return mounted;
-                return prev.every((val, i) => val === mounted[i]) ? prev : mounted;
-            });
-
-            cardDistances.sort((a, b) => a.distance - b.distance);
-
-            const active = cardDistances
-                .slice(0, 3)
-                .filter(item => item.distance < window.innerWidth)
-                .map(item => item.index);
-
-            setActiveIndices(prev => {
-                if (prev.length !== active.length) return active;
-                return prev.every((val, i) => val === active[i]) ? prev : active;
-            });
-
-            rafId = requestAnimationFrame(checkFocus);
+        const measure = () => {
+            const row = row1Ref.current;
+            if (!row) return;
+            const card = row.querySelector('.work-card');
+            if (card) {
+                // Use getBoundingClientRect for width including transforms/borders
+                cardWidth = card.getBoundingClientRect().width;
+                const style = window.getComputedStyle(row);
+                gap = parseFloat(style.gap) || 30;
+                // Add tiny buffer to total width to avoid rounding flicker
+                totalItemWidth = cardWidth + gap;
+            }
+            viewportCenter = window.innerWidth / 2;
         };
 
-        rafId = requestAnimationFrame(checkFocus);
-        return () => cancelAnimationFrame(rafId);
-    }, []);
+        // Measure initially and on resize
+        measure();
+        window.addEventListener('resize', measure);
+
+        const tick = () => {
+            if (!row1Ref.current) return;
+
+            // Get current X position of the row (driven by drag or scroll)
+            const currentX = gsap.getProperty(row1Ref.current, "x");
+
+            // Correct center calculation:
+            // Calculate float index at center
+            const centerIndexFloat = (viewportCenter - currentX - (cardWidth / 2)) / totalItemWidth + 0.5;
+            const centerIndex = Math.round(centerIndexFloat);
+
+            // Determine active range (STRICTLY CENTER)
+            // Only play the one video closest to center, with a tight threshold
+            // "it's still rendering the leftest video" -> Ensure we are strict.
+            const active = [];
+
+            // Only set active if we are very close to the center (within 0.3 of the card width)
+            // This prevents videos playing when they are half-scrolled
+            if (Math.abs(centerIndexFloat - centerIndex) < 0.3) {
+                active.push(centerIndex);
+            }
+
+            // Modulo logic to map virtually infinite index back to 0..length-1
+            const realActive = active.map(i => {
+                const len = reelsData.length;
+                return ((i % len) + len) % len;
+            });
+
+            // WIDEN MOUNTED BUFFER SIGNIFICANTLY (±10)
+            const startMount = Math.floor(centerIndex - 10);
+            const endMount = Math.ceil(centerIndex + 10);
+            const mountedIndicesTemp = [];
+            for (let i = startMount; i <= endMount; i++) {
+                const len = reelsData.length;
+                mountedIndicesTemp.push(((i % len) + len) % len);
+            }
+
+            // Update state only if changed (prevents re-renders)
+            setActiveIndices(prev => {
+                if (prev.length === realActive.length && prev.every((v, k) => v === realActive[k])) return prev;
+                return realActive;
+            });
+
+            setMountedIndices(prev => {
+                // Simple length check optimization
+                if (prev.length === mountedIndicesTemp.length && prev[0] === mountedIndicesTemp[0]) return prev;
+                return [...new Set(mountedIndicesTemp)]; // Dedupe
+            });
+        };
+
+        // Run on every frame using GSAP ticker (synced with RAF)
+        gsap.ticker.add(tick);
+
+        return () => {
+            window.removeEventListener('resize', measure);
+            gsap.ticker.remove(tick);
+        };
+    }, [reelsData.length]);
 
     // ----------------------------------------------------------------------
     // GSAP Scroll Animation

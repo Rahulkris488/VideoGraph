@@ -53,10 +53,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 80px;
+    gap: 120px;
+    /* Increased gap for clear space */
     width: 100%;
-    max-width: 1200px;
-    /* Wider to accommodate both */
+    max-width: 1400px;
+    /* Wider to accommodate larger logo */
     margin: 0 auto;
     padding: 0 40px;
 }
@@ -66,6 +67,7 @@
     flex: 0 0 auto;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .hero-text-col {
@@ -78,10 +80,10 @@
 .hero-logo-large {
     height: auto;
     width: 100%;
-    max-width: 450px;
-    /* Large size */
+    max-width: 600px;
+    /* Increased size */
     object-fit: contain;
-    filter: drop-shadow(0 0 30px rgba(204, 255, 0, 0.15));
+    filter: drop-shadow(0 0 40px rgba(204, 255, 0, 0.2));
 }
 
 /* Text Overrides for Left Align */

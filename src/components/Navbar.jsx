@@ -76,7 +76,7 @@ export default function Navbar() {
                 <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
                     <div className="nav-container">
                         <a href="/" className="nav-logo" onClick={handleLogoClick}>
-                            <img src="/assets/work/Logo.png" alt="Savage Media" className="logo-img" style={{ height: "60px", width: "auto" }} />
+                            <img src="/assets/work/Logo.png" alt="Savage Media" className="logo-img" />
                         </a>
 
                         <div className="nav-links">
@@ -104,7 +104,7 @@ export default function Navbar() {
                 <>
                     <nav className={`mobile-topbar ${scrolled ? "scrolled" : ""}`}>
                         <a href="/" className="nav-logo" onClick={handleLogoClick}>
-                            <img src="/assets/work/Logo.png" alt="Savage Media" className="logo-img" style={{ height: "45px", width: "auto" }} />
+                            <img src="/assets/work/Logo.png" alt="Savage Media" className="logo-img" />
                         </a>
 
                         <button

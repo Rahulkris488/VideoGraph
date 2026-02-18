@@ -12,7 +12,7 @@ export default function Hero() {
 
             // Animate Logo
             tl.from(".hero-logo-large", {
-                x: -50,
+                x: 50,
                 opacity: 0,
                 duration: 1,
                 ease: "power3.out"
@@ -72,16 +72,7 @@ export default function Hero() {
 
             <div className="container hero-container">
                 <div className="hero-layout">
-                    {/* Left Column: Logo */}
-                    <div className="hero-logo-col">
-                        <img
-                            src="/assets/work/Logo.png"
-                            alt="Savage Media Logo"
-                            className="hero-logo-large"
-                        />
-                    </div>
-
-                    {/* Right Column: Text */}
+                    {/* Left Column: Text */}
                     <div className="hero-text-col">
                         <div className="hero-content">
                             <span className="tag tag-accent hero-tag">Real Estate Cinematography</span>
@@ -96,6 +87,15 @@ export default function Hero() {
                                 agents sell faster and <span className="accent-text">stand out</span>.
                             </p>
                         </div>
+                    </div>
+
+                    {/* Right Column: Logo */}
+                    <div className="hero-logo-col">
+                        <img
+                            src="/assets/work/Logo.png"
+                            alt="Savage Media Logo"
+                            className="hero-logo-large"
+                        />
                     </div>
                 </div>
             </div>
